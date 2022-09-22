@@ -1,0 +1,10 @@
+.uppercase input[type=text] {
+    text-transform: uppercase;
+}
+
+#footer {
+    width: 1000px;
+    margin: -100px auto 0;
+    height: 100px;
+    position: relative;
+}
