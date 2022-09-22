@@ -15,6 +15,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme CSS (includes Bootstrap) -->
         <link href="style.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Anonymous+Pro">
         <!-- js -->
         <script src="home.js"></script>
     </head>
