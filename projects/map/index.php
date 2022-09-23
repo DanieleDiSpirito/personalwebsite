@@ -20,7 +20,7 @@
         <script src="home.js"></script>
     </head>
     <body>
-        <div style="margin: 10%" align="center">
+        <div style="margin-top: 10%" align="center">
             <form action="" method="GET">
                 <p>
                     <div style="color: white; font-size: 24px; margin-top: 20px; margin-bottom: 2px">PARTENZA</div>
