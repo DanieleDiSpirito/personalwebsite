@@ -8,7 +8,7 @@
         <!-- Title -->
         <title>Daniele Di Spirito | Map</title>
         <!-- Favicon -->
-        <link rel="icon" type="image/x-icon" href="favicon.ico" />
+        <link rel="icon" type="image/x-icon" href="favicon.png" />
         <!-- Bootstrap icons -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" rel="stylesheet" />
         <!-- Bootstrap core JS -->
@@ -40,7 +40,7 @@
                 </datalist>
                 <p><button type="submit" class="bn5">INVIA</button></p>
             </form>
-
+            <br>
             <?php
             if(isset($_GET['from']) && isset($_GET['to'])) {
                 if($_GET['from'] == '' || $_GET['to'] == '') {
@@ -73,7 +73,10 @@
                         }
                     }
                     if($i === 2) {
-                        echo '<div class="risultato">La distanza è di ' . round(getDistance($latfrom, $lngfrom, $latto, $lngto), 2) . ' km</div>';
+                        echo '
+                        <i class="bi bi-geo-alt"></i> _________________________ <i class="bi bi-geo-alt"></i>
+                        <p>'.$_GET['from'].' - '.$_GET['to'].'</p>
+                        <div class="risultato">La distanza è di ' . round(getDistance($latfrom, $lngfrom, $latto, $lngto), 2) . ' km</div>';
                     } else {
                         echo '<div class="risultato errore">La/e città inserita/e non è/sono valida/e</div>';
                     }
