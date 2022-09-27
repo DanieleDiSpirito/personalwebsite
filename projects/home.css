@@ -12215,6 +12215,14 @@ textarea.form-control-lg {
   background: linear-gradient( rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65) ), url("https://www.pietsmulders.nl/SVA-pad-tussen-Monteross0-en-Vernazza.jpg");
 }
 
+#progetto3 {
+  background: linear-gradient( rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65) ), url("sfondo_imc.jpg");
+}
+
+#progetto3:hover {
+  background: linear-gradient( rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75) ), url("sfondo_imc.jpg");
+}
+
 .progetti {  
   transition-duration: 1s;
   -ms-transition-duration: 1s;
