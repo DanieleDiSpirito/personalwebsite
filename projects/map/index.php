@@ -20,13 +20,15 @@
         <script src="home.js"></script>
     </head>
     <body>
-        <div style="margin-top: 10%" align="center">
+        <br>&nbsp;&nbsp;
+        <a href=".."><i class="bi bi-arrow-left-circle" style="font-size: 3rem; color: white" align="right"></i></a>
+        <div style="margin-top: 7.5%" align="center">
             <form action="" method="GET">
                 <p>
                     <div style="color: white; font-size: 24px; margin-top: 20px; margin-bottom: 2px">PARTENZA</div>
-                    <input type="text" name="from" list="lista-citta" class="font"><br>
+                    <input type="text" name="from" list="lista-citta" class="font" value="<?php if(isset($_GET['from'])) { echo $_GET['from']; } ?>"><br>
                     <div style="color: white; font-size: 24px; margin-top: 20px; margin-bottom: 2px">ARRIVO</div>
-                    <input type="text" name="to"   list="lista-citta" class="font">
+                    <input type="text" name="to"   list="lista-citta" class="font" value="<?php if(isset($_GET['to'])) { echo $_GET['to']; } ?>">
                 </p><br>
                 <datalist id="lista-citta">
                     <?php

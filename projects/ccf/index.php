@@ -20,14 +20,14 @@
         <script src="../home.js"></script>
         <script src="script.js"></script>
     </head>
-    <body style="background-color: #1E1F23 !important" onload="hideHouse()" onresize="hideHouse()">
+    <body style="background-color: #1E1F23 !important" onresize="hideHouse()">
         <!-- Header -->
         <nav class="navbar bg-dark" style="background-color: #1E1F23 !important; height: 160px">
-            <div class="container" style="display: flex; flex-direction: row; gap: 50%">
-               <a href="">
+            <div class="container" style="display: flex; flex-direction: row; gap: 0%">
+                <a href=".." style="color: white !important; text-decoration: none">&nbsp;&nbsp;<i class="bi bi-arrow-left-circle" style="font-size: 2.5rem"></i></a>
+                <a href="">
                	<img src="logo.jpg" alt="Bootstrap" width="80%">
                </a>
-               <a href=".." style="color: white !important"><i class="bi bi-house-fill" style="font-size: 40px"></i></a>
             </div>
         </nav>
         <!-- PHP -->
@@ -67,14 +67,14 @@
 
                 <div class="col-md-6">
                     <label for="validationServer01" class="form-label">COGNOME</label>
-                    <input type="text" name="cognome" placeholder="ROSSI" class="form-control <?php if(isset($_POST['cognome']) && !isValid($_POST['cognome'])) { echo 'is-invalid'; } ?>" id="validationServer01" value="" required onkeyup="controlloForm('cognome')">
+                    <input type="text" name="cognome" value="<?php if(isset($_POST['cognome'])) { echo $_POST['cognome']; } ?>" placeholder="ROSSI" class="form-control <?php if(isset($_POST['cognome']) && !isValid($_POST['cognome'])) { echo 'is-invalid'; } ?>" id="validationServer01" value="" required onkeyup="controlloForm('cognome')">
                     <div id="validationServer01Feedback" class="invalid-feedback">
                     Sono consentiti solo lettere, spazio, ' e -
                     </div>
                 </div>
                 <div class="col-md-6">
                     <label for="validationServer02" class="form-label">NOME</label>
-                    <input type="text" name="nome" placeholder="MARIO" class="form-control <?php if(isset($_POST['nome']) && !isValid($_POST['nome'])) { echo 'is-invalid'; } ?>" id="validationServer02" value="" required onkeyup="controlloForm('nome')">
+                    <input type="text" name="nome" value="<?php if(isset($_POST['nome'])) { echo $_POST['nome']; } ?>" placeholder="MARIO" class="form-control <?php if(isset($_POST['nome']) && !isValid($_POST['nome'])) { echo 'is-invalid'; } ?>" id="validationServer02" value="" required onkeyup="controlloForm('nome')">
                     <div id="validationServer02Feedback" class="invalid-feedback">
                     Sono consentiti solo lettere, spazio, ' e -
                     </div>
@@ -82,7 +82,7 @@
 
                 <div class="py-2 col-md-12">
                     <label for="citta" class="form-label">LUOGO DI NASCITA</label>
-                    <input type="text" name="nascita" placeholder="CITTÀ / NAZIONE" list="lista-comuni" class="form-control <?php if(isset($_POST['nascita']) && istatCity($_POST['nascita']) === false) { echo 'is-invalid'; } ?>" id="citta" required>
+                    <input type="text" name="nascita" value="<?php if(isset($_POST['nascita'])) { echo $_POST['nascita']; } ?>" placeholder="CITTÀ / NAZIONE" list="lista-comuni" class="form-control <?php if(isset($_POST['nascita']) && istatCity($_POST['nascita']) === false) { echo 'is-invalid'; } ?>" id="citta" required>
                     <datalist id="lista-comuni">
                         <?php
                             $handler = fopen('comuni.csv', 'r');
@@ -100,16 +100,17 @@
                 <div class="col-md-3">
                     <label for="validationServer04" class="form-label">SESSO</label>
                     <select class="form-select" name="sesso" id="validationServer04" aria-describedby="validationServer04Feedback" required>
-                    <option selected value="0">MASCHIO</option>
-                    <option value="40">FEMMINA</option>
+                    <option <?php if(isset($_POST['sesso']) and $_POST['sesso'] === "0") { echo 'selected'; } ?> value="0">MASCHIO</option>
+                    <option <?php if(isset($_POST['sesso']) and $_POST['sesso'] === "40") { echo 'selected'; } ?> value="40">FEMMINA</option>
                     </select>
                 </div>
                 <div class="col-md-9">
                     <label for="validationServer05" class="form-label">DATA DI NASCITA</label>
-                    <input type="date" name="data" min="1900-01-01" max=<?php echo date("Y-m-d")?> class="form-control" id="validationServer05" aria-describedby="validationServer05Feedback" required>
+                    <input type="date" name="data" value="<?php if(isset($_POST['data'])) { echo $_POST['data']; } ?>" min="1900-01-01" max=<?php echo date("Y-m-d")?> class="form-control" id="validationServer05" aria-describedby="validationServer05Feedback" required>
                 </div>
                 <div class="py-5 col-12">
                     <button class="btn btn-primary" type="submit" name="invio" onclick="//controlloFinale()">CALCOLA</button>
+                    <span style="width: 2rem"><input type="button" class="btn btn-danger" value="RESET" onclick="reset();"></span>
                 </div>
             </form>
             <?php 

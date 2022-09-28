@@ -24,13 +24,20 @@ const isValid = (character) => {
 }
 
 const hideHouse = () => {
-    if(window.outerWidth <= 500) {
-        houseIcon = document.getElementsByClassName('bi')[0]
+    if(window.outerWidth <= 280) {
+        houseIcon = document.getElementsByClassName('bi-arrow-left-circle')[0]
         houseIcon.hidden = true
     } else {
         if(houseIcon.hidden) {
             houseIcon.hidden = false
         }
+    }
+}
+
+const reset = () => {
+    for(let input of document.getElementsByTagName('input')) {
+        if(input.value === 'RESET' && input.classList[0].startsWith('btn')) continue;
+        else input.value = '';
     }
 }
 /*const luogoNascitaValido = () => {
