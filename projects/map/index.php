@@ -35,11 +35,16 @@
                         </p>
                         <datalist id="lista-citta">
                             <?php
-                                $handler = fopen('coordinate.csv', 'r');
-                                fgets($handler); // the first line is useless
-                                while(!feof($handler)) {
-                                    $row = fgetcsv($handler, null, ',');
-                                    echo '<option>' . $row[1] . '</option>' . PHP_EOL;
+                                $db_host = 'localhost';
+                                $db_user = 'root';
+                                $db_password = '';
+                                $db_name = 'my_dispiritodaniele';
+                                $conn = mysqli_connect($db_host, $db_user, $db_password, $db_name);
+
+                                $query = 'SELECT * FROM COORDINATE';
+                                $result = mysqli_query($conn, $query);
+                                while($row = mysqli_fetch_array($result)) {
+                                    echo '<option>' . $row["comune"] . '</option>' . PHP_EOL;
                                 }
                             ?>
                         </datalist><br>
@@ -53,33 +58,30 @@
                         } elseif (strtolower($_GET['from']) == strtolower($_GET['to'])) {
                             echo '<div class="risultato errore">Inserire una partenza ed una destinazione diversa</div>';
                         } else {
-                            $handler = fopen('coordinate.csv', 'r');
-                            fgets($handler); // the first line is useless
                             $i = 0;
                             $latfrom = 0;
                             $lngfrom = 0;
                             $latto = 0;
                             $lngto = 0;
-                            $from = strtoupper($_GET['from']);
-                            $to = strtoupper($_GET['to']);
-                            while (!feof($handler)) {
-                                $row = fgetcsv($handler, null, ',');
-                                if (!isset($row[1])) break;
-                                if ($from === strtoupper($row[1])) {
-                                    $latfrom = $row[3];
-                                    $lngfrom = $row[2];
-                                    $i++;
-                                }
-                                if ($to === strtoupper($row[1])) {
-                                    $latto = $row[3];
-                                    $lngto = $row[2];
-                                    $i++;
-                                }
-                                if ($i === 2) {
-                                    break;
-                                }
+                            $from = $_GET['from'];
+                            $to = $_GET['to'];
+
+                            $query = "SELECT latitudine, longitudine FROM COORDINATE WHERE comune='$from'";
+                            $result = mysqli_fetch_array(mysqli_query($conn, $query));
+                            if(!is_null($result)) {
+                                $latfrom = $result[0];
+                                $lngfrom = $result[1];
+                                $i++;
                             }
-                            if($i === 2) {
+                            $query = "SELECT latitudine, longitudine FROM COORDINATE WHERE comune='$to'";
+                            $result = mysqli_fetch_array(mysqli_query($conn, $query));
+                            if(!is_null($result)) {
+                                $latto = $result[0];
+                                $lngto = $result[1];
+                                $i++;
+                            }
+
+                            if($i == 2) {
                                 $EQUATORE = 40076;
                                 $latCentro = ($latfrom + $latto) / 2;
                                 $lngCentro = ($lngfrom + $lngto) / 2;
@@ -106,6 +108,7 @@
                         echo '</div><br><div class="col-6" style="height: 500px; margin-top: 5%"><i   frame src="https://maps.google.com/maps?q=Italy&z=5&output=embed&language=it" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
                     }
 
+                    mysqli_close($conn);
                     ?>
 
 
