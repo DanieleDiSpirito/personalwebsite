@@ -54,7 +54,12 @@
                 global $conn;
                 $query = "SELECT ISTAT FROM COMUNI WHERE NOME='$stringa'";
                 $result = mysqli_query($conn, $query);
-                return mysqli_fetch_array($result)[0];
+                $final_result = mysqli_fetch_array($result);
+                if(is_null($final_result)) {
+                    return false;
+                } else {
+                    return $final_result[0];
+                }
 
 /*
                 $stringa = strtoupper($stringa);
