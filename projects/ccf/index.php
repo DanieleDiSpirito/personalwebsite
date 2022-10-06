@@ -32,6 +32,14 @@
         </nav>
         <!-- PHP -->
         <?php
+
+            // database connection
+            $db_host = 'localhost';
+            $db_user = 'root';
+            $db_password = '';
+            $db_name = 'my_dispiritodaniele';
+            $conn = mysqli_connect($db_host, $db_user, $db_password, $db_name);
+
             function isValid($stringa) {
                 if($stringa === '') { return false; }
                 $stringa = strtoupper($stringa);
@@ -42,6 +50,13 @@
             }
 
             function istatCity($stringa) {
+
+                global $conn;
+                $query = "SELECT ISTAT FROM COMUNI WHERE NOME='$stringa'";
+                $result = mysqli_query($conn, $query);
+                return mysqli_fetch_array($result)[0];
+
+/*
                 $stringa = strtoupper($stringa);
                 $handler = fopen('comuni.csv', 'r');
                 while(!feof($handler)) {
@@ -49,6 +64,7 @@
                     if($stringa === strtoupper($row[1])) { return $row[0]; }
                 }
                 return false;
+*/
             }
 
             function controlloEta($stringa) {
@@ -85,11 +101,21 @@
                     <input type="text" name="nascita" value="<?php if(isset($_POST['nascita'])) { echo $_POST['nascita']; } ?>" placeholder="CITTÀ / NAZIONE" list="lista-comuni" class="form-control <?php if(isset($_POST['nascita']) && istatCity($_POST['nascita']) === false) { echo 'is-invalid'; } ?>" id="citta" required>
                     <datalist id="lista-comuni">
                         <?php
-                            $handler = fopen('comuni.csv', 'r');
-                            while(!feof($handler)) {
-                                $row = fgetcsv($handler, null, ';'); // explode() incorporated
-                                echo '<option data-value=' . $row[0] . '>' . $row[1] . '</option>' . PHP_EOL;
-                            }
+
+                        $query = 'SELECT * FROM COMUNI';
+                        $result = mysqli_query($conn, $query);
+                        while($row = mysqli_fetch_array($result)) {
+                            echo '<option data-value=' . $row["ISTAT"] . '>' . $row["NOME"] . '</option>' . PHP_EOL;
+                        }
+
+                        /*
+                        $handler = fopen('comuni.csv', 'r');
+                        while(!feof($handler)) {
+                            $row = fgetcsv($handler, null, ';'); // explode() incorporated
+                            echo '<option data-value=' . $row[0] . '>' . $row[1] . '</option>' . PHP_EOL;
+                        }
+                        */
+
                         ?>
                     </datalist>
 
