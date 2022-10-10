@@ -6127,7 +6127,7 @@ textarea.form-control-lg {
 }
 
 .carousel-control-next-icon {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+  background-image: url("images/images/data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
 }
 
 .carousel-indicators {
@@ -12196,15 +12196,15 @@ textarea.form-control-lg {
 }
 
 #progetto0 {
-  background: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ), url("unita-di-misura-informatiche.jpg");
+  background: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ), url("images/unita-di-misura-informatiche.jpg");
 }
 
 #progetto1 {
-  background: linear-gradient( rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65) ), url("sfondo_ccf.jpg");
+  background: linear-gradient( rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65) ), url("images/sfondo_ccf.jpg");
 }
 
 #progetto1:hover {
-  background: linear-gradient( rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75) ), url("sfondo_ccf.jpg");
+  background: linear-gradient( rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75) ), url("images/sfondo_ccf.jpg");
 }
 
 #progetto2 {
@@ -12216,11 +12216,19 @@ textarea.form-control-lg {
 }
 
 #progetto3 {
-  background: linear-gradient( rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65) ), url("sfondo_imc.jpg");
+  background: linear-gradient( rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65) ), url("images/sfondo_imc.jpg");
 }
 
 #progetto3:hover {
-  background: linear-gradient( rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75) ), url("sfondo_imc.jpg");
+  background: linear-gradient( rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75) ), url("images/sfondo_imc.jpg");
+}
+
+#progetto4 {
+  background: linear-gradient( rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65) ), url("images/key-icon.png");
+}
+
+#progetto4:hover {
+  background: linear-gradient( rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75) ), url("images/key-icon.png");
 }
 
 .progetti {  
