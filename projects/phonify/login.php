@@ -39,7 +39,7 @@
             $db_host = 'localhost';
             $db_user = 'root';
             $db_password = '';
-            $db_name = 'my_dispiritodaniele';
+            $db_name = 'phonify';
             $conn = new mysqli($db_host, $db_user, $db_password, $db_name);
             if ($conn->connect_errno) {
                 echo "Failed to connect to MySQL: " . $conn->connect_error;
@@ -48,7 +48,7 @@
 
             // query
             $password = hash('sha256', $password); //SHA256 password
-            $stmt = $conn->prepare("SELECT email FROM accesso WHERE password=? AND username=?");
+            $stmt = $conn->prepare("SELECT email FROM utenti WHERE password=? AND username=?");
             $stmt->bind_param('ss', $password, $username); // pass password and username as string (s)
             $stmt->execute();
             if ($stmt->bind_result($email)) { // there is at least one result
@@ -85,7 +85,7 @@
         }
     ?>
 	<div class="limiter">
-		<div class="container-login100" style="background: -webkit-linear-gradient(left, #a445b2, #d41872, #fa4299);">
+		<div class="container-login100" style="background: #666666;">
 			<div class="wrap-login100 p-t-30 p-b-50">
 				<span class="login100-form-title p-b-41">
 					LOGIN
@@ -124,23 +124,6 @@
 	
 
 	<div id="dropDownSelect1"></div>
-	
-<!--===============================================================================================-->
-	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/animsition/js/animsition.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/bootstrap/js/popper.js"></script>
-	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/select2/select2.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/daterangepicker/moment.min.js"></script>
-	<script src="vendor/daterangepicker/daterangepicker.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/countdowntime/countdowntime.js"></script>
-<!--===============================================================================================-->
-	<script src="js/main.js"></script>
 
 </body>
 </html>

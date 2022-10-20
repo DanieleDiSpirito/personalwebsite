@@ -12224,11 +12224,15 @@ textarea.form-control-lg {
 }
 
 #progetto4 {
-  background: linear-gradient( rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65) ), url("images/key-icon.png");
+  background: linear-gradient( rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.0) ), url("phonify/assets/images/logo.png");
+  background-size: cover;
+  background-position: center;
 }
 
 #progetto4:hover {
-  background: linear-gradient( rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75) ), url("images/key-icon.png");
+  background: linear-gradient( rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) ), url("phonify/assets/images/logo.png");
+  background-size: cover;
+  background-position: center;
 }
 
 .progetti {  
