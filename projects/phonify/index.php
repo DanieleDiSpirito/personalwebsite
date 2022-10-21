@@ -20,7 +20,7 @@ if ($mysqli->connect_errno) {
     exit();
 }
 
-$result = $mysqli->query('SELECT * FROM prodotti');
+$result = $mysqli->query('SELECT * FROM prodotti ORDER BY idProdotto ASC');
 if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
         $prodotti[] = array($row["idProdotto"], $row["nomeProdotto"], $row["descrizione"], $row["quantita"], $row["prezzo"], $row["immagine"]);
@@ -148,32 +148,25 @@ $mysqli->close();
         </div>
     </div>
     <div class="container">
-        <div class="row">
+        <div class="row" style="justify-content: center">
             <?php
                 foreach($prodotti as $prodotto) {
                     echo '
-                    <div class="col-lg-4">
+                    <div class="colonna">
                         <div class="item">
-                            <div class="thumb">
+                            <div class="thumb" style="width: fit-content">
                                 <div class="hover-content">
                                     <ul>
-                                        <li><a href="single-product.html"><i class="fa fa-eye"></i></a></li>
-                                        <li><a href="single-product.html"><i class="fa fa-star"></i></a></li>
-                                        <li><a href="single-product.html"><i class="fa fa-shopping-cart"></i></a></li>
+                                        <li style="margin: 0 auto;"><a href="single-product.html"><i class="fa fa-eye"></i></a></li>
+                                        <li style="margin: 0 auto;"><a href="single-product.html"><i class="fa fa-star"></i></a></li>
+                                        <li style="margin: 0 auto;"><a href="single-product.html"><i class="fa fa-shopping-cart"></i></a></li>
                                     </ul>
                                 </div>
-                                <img src="data:image/jpg;base64,'.$prodotto[5].'" alt="">
+                                <img style="height: 18rem; width: auto;" src="data:image/jpg;base64,'.$prodotto[5].'" alt="">
                             </div>
                             <div class="down-content">
-                                <h4>'.$prodotto[1].'</h4>
+                                <a href="single-product.html" class="nomeprodotto"><h4>'.$prodotto[1].'</h4></a>
                                 <span>$'.$prodotto[4].'</span>
-                                <ul class="stars">
-                                    <li><i class="fa fa-star"></i></li>
-                                    <li><i class="fa fa-star"></i></li>
-                                    <li><i class="fa fa-star"></i></li>
-                                    <li><i class="fa fa-star"></i></li>
-                                    <li><i class="fa fa-star"></i></li>
-                                </ul>
                             </div>
                         </div>
                     </div>
@@ -188,56 +181,33 @@ $mysqli->close();
 <!-- ***** Footer Start ***** -->
 <footer>
     <div class="container">
-        <div class="row">
+        <div class="row" style="align-items: center;">
             <div class="col-lg-3">
                 <div class="first-item">
-                    <div class="logo">
-                        <img src="assets/images/white-logo.png" alt="hexashop ecommerce templatemo">
+                    <div class="logo" style="justify-content: center;display: flex;margin-bottom: 2rem;">
+                        <img src="assets/images/logo_no_bg.png" style="width: 20rem">
                     </div>
-                    <ul>
-                        <li><a href="#">16501 Collins Ave, Sunny Isles Beach, FL 33160, United States</a></li>
-                        <li><a href="#">hexashop@company.com</a></li>
-                        <li><a href="#">010-020-0340</a></li>
-                    </ul>
                 </div>
             </div>
-            <div class="col-lg-3">
-                <h4>Shopping &amp; Categories</h4>
+            <div class="col-lg-6" style="text-align: center; color: white !important;">
                 <ul>
-                    <li><a href="#">Men’s Shopping</a></li>
-                    <li><a href="#">Women’s Shopping</a></li>
-                    <li><a href="#">Kid's Shopping</a></li>
+                    <li><i class="bi bi-geo"></i>&nbsp;&nbsp;Via Giovanni Pascoli, 57 | Noicattaro, BA</li>
+                    <li>dispiritodaniele.noreply@gmail.com</li>
                 </ul>
             </div>
             <div class="col-lg-3">
-                <h4>Useful Links</h4>
+                <h4>Pagine</h4>
                 <ul>
-                    <li><a href="#">Homepage</a></li>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Help</a></li>
-                    <li><a href="#">Contact Us</a></li>
-                </ul>
-            </div>
-            <div class="col-lg-3">
-                <h4>Help &amp; Information</h4>
-                <ul>
-                    <li><a href="#">Help</a></li>
-                    <li><a href="#">FAQ's</a></li>
-                    <li><a href="#">Shipping</a></li>
-                    <li><a href="#">Tracking ID</a></li>
+                    <li><a href="#" class="active">Home</a></li>
+                    <li><a href="cart.php">Carrello</a></li>
+                    <li><a href="../..">Chi sono</a></li>
+                    <li><a href="dovesiamo.html">Dove siamo</a></li>
+                    <li><a href="logout.php">Logout</a></li>
                 </ul>
             </div>
             <div class="col-lg-12">
                 <div class="under-footer">
-                    <p>Copyright © 2022 HexaShop Co., Ltd. All Rights Reserved.
-
-                        <br>Design: <a href="https://templatemo.com" target="_parent" title="free css templates">TemplateMo</a></p>
-                    <ul>
-                        <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                        <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                        <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
-                        <li><a href="#"><i class="fa fa-behance"></i></a></li>
-                    </ul>
+                    <p>Copyright © 2022 Phonify Co., Ltd. All Rights Reserved.
                 </div>
             </div>
         </div>

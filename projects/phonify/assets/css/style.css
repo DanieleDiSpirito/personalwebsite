@@ -2382,3 +2382,39 @@ responsive
   margin: 0 !important;
 
 }
+
+.colonna {
+  flex: 0 0 20%;
+  max-width: 20%;
+  margin-left: 3rem;
+}
+
+@media (max-width: 1200px) {
+  .colonna {
+    flex: 0 0 28%;
+    max-width: 28%;
+  }
+}
+
+@media (max-width: 992px) {
+  .colonna {
+    flex: 0 0 40%;
+    max-width: 40%;
+  }
+}
+
+@media (max-width: 767px) {
+  .colonna {
+    flex: 0 0 45%;
+    max-width: 45%;
+    justify-content: center;
+  }
+}
+
+.nomeprodotto {
+  text-decoration: none !important;
+}
+
+.nomeprodotto:hover {
+  text-decoration: underline !important;
+}
