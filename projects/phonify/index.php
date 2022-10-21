@@ -93,14 +93,14 @@ $mysqli->close();
                         <li class="scroll-to-section"><a href="#" class="active">Home</a></li>
                         <li class="scroll-to-section"><a href="cart.php"><i class="bi bi-cart" style="font-size: 1.5rem"></i> 0</a></li>
                         <li class="submenu">
-                            <a href="javascript:;">Informazioni</a>
+                            <a>Informazioni</a>
                             <ul>
                                 <li><a href="../..">Chi sono&nbsp;&nbsp;<i class="bi bi-question-square" style="font-size: 1rem"></i></a></li>
                                 <li><a href="dovesiamo.html">Dove siamo&nbsp;&nbsp;<i class="bi bi-geo" style="font-size: 1rem"></i></a></li>
                             </ul>
                         </li>
                         <li class="submenu">
-                            <i class="bi bi-person-circle" style="font-size: 1.5rem"></i>
+                            <a><i class="bi bi-person-circle" style="font-size: 1.5rem"></i></a>
                             <ul>
                                 <li><a class="active" style="color: black"><b><?php echo $account->username; ?></b></a></li>
                                 <li><a href="logout.php">Logout <i class="bi bi-box-arrow-left"></i> </a></li>
@@ -119,30 +119,21 @@ $mysqli->close();
 </header>
 <!-- ***** Header Area End ***** -->
 
-<!-- ***** Main Banner Area Start *****
-<div class="page-heading" id="top">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="inner-content">
-                    <h2>Check Our Products</h2>
-                    <span>Awesome &amp; Creative HTML CSS layout by TemplateMo</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
- ***** Main Banner Area End ***** -->
-
-
 <!-- ***** Products Area Starts ***** -->
 <section class="section" id="products" style="padding-top: 3rem;">
     <div class="container">
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-5"></div>
+            <div class="col-lg-2">
                 <div class="section-heading">
                     <h2>Home</h2>
-                    <span>Scopri tutti i nostri prodotti</span>
+                    <span style="font-size: 0.75rem">Scopri tutti i nostri prodotti</span>
+                </div>
+            </div>
+            <div class="col-lg-5 colonna5" style="justify-content: right; display: flex; align-items: center">
+                <div class="search-box">
+                    <input type="text" placeholder=" ">
+                    <button type="reset" onclick="removeContent()"></button>
                 </div>
             </div>
         </div>
@@ -191,8 +182,8 @@ $mysqli->close();
             </div>
             <div class="col-lg-6" style="text-align: center; color: white !important;">
                 <ul>
-                    <li><i class="bi bi-geo"></i>&nbsp;&nbsp;Via Giovanni Pascoli, 57 | Noicattaro, BA</li>
-                    <li>dispiritodaniele.noreply@gmail.com</li>
+                    <li><i class="bi bi-geo"></i>&nbsp;&nbsp;Via Giovanni Pascoli, 57 | Noicattaro (BA)</li>
+                    <li><i class="bi bi-at"></i>&nbsp;&nbsp;dispiritodaniele.noreply@gmail.com</li>
                 </ul>
             </div>
             <div class="col-lg-3">
@@ -236,6 +227,7 @@ $mysqli->close();
 
 <!-- Global Init -->
 <script src="assets/js/custom.js"></script>
+<script src="assets/js/searchbar.js"></script>
 
 <script>
 
