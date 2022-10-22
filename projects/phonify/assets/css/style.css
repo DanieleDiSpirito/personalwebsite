@@ -2278,6 +2278,11 @@ responsive
     margin-bottom: 30px;
   }
 
+  .colonna3 {
+    text-align: center !important;
+    margin-top: 35px !important;
+  }
+
   .colonna5 {
     margin-bottom: 75px;
     justify-content: center !important;
@@ -2511,3 +2516,11 @@ responsive
 }
 
 /* FINE SEARCHBAR */
+
+.colonna3 {
+  text-align: right;
+}
+
+.hidden {
+  display: none !important;
+}

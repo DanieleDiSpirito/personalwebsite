@@ -132,7 +132,7 @@ $mysqli->close();
             </div>
             <div class="col-lg-5 colonna5" style="justify-content: right; display: flex; align-items: center">
                 <div class="search-box">
-                    <input type="text" placeholder=" ">
+                    <input type="text" placeholder=" " onkeyup="search();">
                     <button type="reset" onclick="removeContent()"></button>
                 </div>
             </div>
@@ -180,13 +180,13 @@ $mysqli->close();
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6" style="text-align: center; color: white !important;">
+            <div class="col-lg-6" style="text-align: center; color: white !important; margin-top: 20px">
                 <ul>
                     <li><i class="bi bi-geo"></i>&nbsp;&nbsp;Via Giovanni Pascoli, 57 | Noicattaro (BA)</li>
                     <li><i class="bi bi-at"></i>&nbsp;&nbsp;dispiritodaniele.noreply@gmail.com</li>
                 </ul>
             </div>
-            <div class="col-lg-3">
+            <div class="col-lg-3 colonna3">
                 <h4>Pagine</h4>
                 <ul>
                     <li><a href="#" class="active">Home</a></li>
