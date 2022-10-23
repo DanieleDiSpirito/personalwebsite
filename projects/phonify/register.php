@@ -8,6 +8,7 @@
     <link rel="icon" type="image/png" href="../../favicon.ico"/>
     <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" rel="stylesheet" />
     <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
     <!--===============================================================================================-->
@@ -129,6 +130,11 @@
 ?>
 <div class="limiter">
     <div class="container-login100" style="background: #666666;">
+        
+        <a href="index.php">
+            <i class="bi bi-arrow-left" style="position: absolute; left: 5%; top: 5%; color: white; font-size: 2.5rem; "></i>
+        </a>
+
         <div class="wrap-login100 p-t-30 p-b-50">
 				<span class="login100-form-title p-b-41">
 					 REGISTRAZIONE

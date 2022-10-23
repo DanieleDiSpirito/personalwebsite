@@ -6,28 +6,6 @@ session_start();
 if(isset($_SESSION['session']) && (!isset($_SESSION['codice']) or $_SESSION['codice'] === -1)) {
     $account = json_decode(base64_decode($_SESSION['session']));
 }
-
-$db_host = 'localhost';
-$db_user = 'root';
-$db_password = '';
-$db_name = 'my_dispiritodaniele';
-$mysqli = new mysqli($db_host, $db_user, $db_password, $db_name);
-if ($mysqli->connect_errno) {
-    echo "Failed to connect to MySQL: " . $mysqli->connect_error;
-    exit();
-}
-
-$result = $mysqli->query('SELECT * FROM cellulari ORDER BY idProdotto ASC');
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        $prodotti[] = array($row["idProdotto"], $row["nomeProdotto"], $row["descrizione"], $row["quantita"], $row["prezzo"], $row["immagine"]);
-    }
-} else {
-    printf('No record found.<br />');
-}
-mysqli_free_result($result);
-$mysqli->close();
-
 ?>
 
 <head>
@@ -87,13 +65,13 @@ $mysqli->close();
                     <!-- ***** Logo End ***** -->
                     <!-- ***** Menu Start ***** -->
                     <ul class="nav">
-                        <li class="scroll-to-section"><a href="#" class="active">Home</a></li>
+                        <li class="scroll-to-section"><a href="index.php">Home</a></li>
                         <li class="scroll-to-section"><a href="cart.php"><i class="bi bi-cart" style="font-size: 1.5rem"></i> 0</a></li>
                         <li class="submenu">
                             <a>Informazioni</a>
                             <ul>
                                 <li><a href="../..">Chi sono&nbsp;&nbsp;<i class="bi bi-question-square" style="font-size: 1rem"></i></a></li>
-                                <li><a href="dovesiamo.php">Dove siamo&nbsp;&nbsp;<i class="bi bi-geo" style="font-size: 1rem"></i></a></li>
+                                <li><a href="#" class="active" style="color: #00000080 !important;">Dove siamo&nbsp;&nbsp;<i class="bi bi-geo" style="font-size: 1rem"></i></a></li>
                             </ul>
                         </li>
                         <?php
@@ -126,60 +104,29 @@ $mysqli->close();
 <!-- ***** Header Area End ***** -->
 
 <!-- ***** Products Area Starts ***** -->
-<section class="section" id="products" style="padding-top: 3rem;">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-5"></div>
-            <div class="col-lg-2">
-                <div class="section-heading">
-                    <h2>Home</h2>
-                    <span style="font-size: 0.75rem">Scopri tutti i nostri prodotti</span>
-                </div>
+<main>
+    <div class="container text-center" style="margin-top: 10rem;">
+        <div class="row align-items-center">
+            <div class="col-lg-6" style="margin-bottom: 1rem">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d188.09122237827876!2d16.9910398!3d41.0370783!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1347c15b10ec3065%3A0x5996f9ba9240a946!2sVia%20Giovanni%20Pascoli%2C%2057%2C%2070016%20Noicattaro%20BA%2C%20Italia!5e0!3m2!1sit!2sus!4v1666520731451!5m2!1sit!2sus" width="100%" height="300px" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
-            <div class="col-lg-5 colonna5" style="justify-content: right; display: flex; align-items: center">
-                <div class="search-box">
-                    <input type="text" placeholder=" " onkeyup="search();">
-                    <button type="reset" onclick="removeContent()"></button>
+            <div class="col-lg-6" style="display: grid;justify-items: center;justify-content: center;">
+                <h3>Dove siamo</h3>
+                <div>
+                    <table style="margin-top: 1rem;">
+                        <tr>
+                            <td><i class="bi bi-geo-alt"></i></td><td>&nbsp;&nbsp;&nbsp;Via Giovanni Pascoli, 57</td>
+                        </tr>
+                        <tr>
+                            <td><i class="bi bi-map"></i></td><td>Noicattaro (BA)</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-    <div class="container">
-        <div class="row" style="justify-content: center">
-            <?php
-                foreach($prodotti as $prodotto) {
-                    echo '
-                    <div class="colonna">
-                        <div class="item">
-                            <div class="thumb" style="width: fit-content">
-                                <div class="hover-content">
-                                    <ul>
-                                        <li style="margin: 0 auto;"><a href="single-product.html"><i class="fa fa-eye"></i></a></li>
-                                        <li style="margin: 0 auto;"><a href="single-product.html"><i class="fa fa-shopping-cart"></i></a></li>
-                                    </ul>
-                                </div>
-                                <img style="height: 18rem; width: auto;" src="data:image/jpg;base64,'. base64_encode($prodotto[5]) .'" alt="">
-                            </div>
-                            <div class="down-content">
-                                <a href="single-product.html" class="nomeprodotto"><h4>'.$prodotto[1].'</h4></a>
-                                <span>$'.$prodotto[4].'</span>
-                            </div>
-                        </div>
-                    </div>
-                    ';
-                    /*
-                        0 -> idProdotto
-                        1 -> nomeProdotto
-                        2 -> descrizione
-                        3 -> quantita
-                        4 -> prezzo
-                        5 -> immagine
-                    */
-                }
-            ?>
-        </div>
-    </div>
-</section>
+</main>
+
 <!-- ***** Products Area Ends ***** -->
 
 <!-- ***** Footer Start ***** -->
@@ -202,10 +149,10 @@ $mysqli->close();
             <div class="col-lg-3 colonna3">
                 <h4>Pagine</h4>
                 <ul>
-                    <li><a href="#" class="active">Home</a></li>
+                    <li><a href="index.php">Home</a></li>
                     <li><a href="cart.php">Carrello</a></li>
                     <li><a href="../..">Chi sono</a></li>
-                    <li><a href="dovesiamo.php">Dove siamo</a></li>
+                    <li><a href="#" class="active">Dove siamo</a></li>
                     <li><a href="api/logout.php">Logout</a></li>
                 </ul>
             </div>
