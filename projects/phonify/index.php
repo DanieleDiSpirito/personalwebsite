@@ -17,10 +17,10 @@ if ($mysqli->connect_errno) {
     exit();
 }
 
-$result = $mysqli->query('SELECT * FROM cellulari ORDER BY idProdotto ASC');
+$result = $mysqli->query('SELECT idProdotto, nomeProdotto, prezzo, immagine FROM cellulari ORDER BY idProdotto ASC');
 if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
-        $prodotti[] = array($row["idProdotto"], $row["nomeProdotto"], $row["descrizione"], $row["quantita"], $row["prezzo"], $row["immagine"]);
+        $prodotti[] = array($row["idProdotto"], $row["nomeProdotto"], $row["prezzo"], $row["immagine"]);
     }
 } else {
     printf('No record found.<br />');
@@ -145,7 +145,7 @@ $mysqli->close();
         </div>
     </div>
     <div class="container">
-        <div class="row" style="justify-content: center">
+        <div class="row row_on_phone" style="justify-content: center">
             <?php
                 foreach($prodotti as $prodotto) {
                     echo '
@@ -158,11 +158,11 @@ $mysqli->close();
                                         <li style="margin: 0 auto;"><a href="single-product.html"><i class="fa fa-shopping-cart"></i></a></li>
                                     </ul>
                                 </div>
-                                <img style="height: 18rem; width: auto;" src="data:image/jpg;base64,'. base64_encode($prodotto[5]) .'" alt="">
+                                <img class="img_on_phone" src="data:image/jpg;base64,'. base64_encode($prodotto[3]) .'" alt="">
                             </div>
                             <div class="down-content">
-                                <a href="single-product.html" class="nomeprodotto"><h4>'.$prodotto[1].'</h4></a>
-                                <span>$'.$prodotto[4].'</span>
+                                <a href="single-product.html" class="nomeprodotto" id="'. $prodotto[0] . '"><h4>'.$prodotto[1].'</h4></a>
+                                <span>$'.$prodotto[2].'</span>
                             </div>
                         </div>
                     </div>
@@ -170,10 +170,8 @@ $mysqli->close();
                     /*
                         0 -> idProdotto
                         1 -> nomeProdotto
-                        2 -> descrizione
-                        3 -> quantita
-                        4 -> prezzo
-                        5 -> immagine
+                        2 -> prezzo
+                        3 -> immagine
                     */
                 }
             ?>

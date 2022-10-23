@@ -2524,3 +2524,23 @@ responsive
 .hidden {
   display: none !important;
 }
+
+.img_on_phone {
+  width: auto;
+  height: 18rem;
+}
+
+@media (max-width: 570px) {
+  .row_on_phone {
+    display: block !important;
+  }
+
+  .colonna {
+    margin: 0 auto !important;
+  }
+
+  .img_on_phone {
+    width: 100%;
+    height: auto;
+  }
+}
