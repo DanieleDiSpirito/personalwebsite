@@ -1,26 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
 
 <?php
-session_start();
-if (isset($_SESSION['session']) && (!isset($_SESSION['codice']) or $_SESSION['codice'] === -1)) {
-    $account = json_decode(base64_decode($_SESSION['session']));
-}
-
 include 'config.php';
 
-$result = $mysqli->query('SELECT idProdotto, nomeProdotto, prezzo, immagine FROM cellulari ORDER BY idProdotto ASC');
+$result = $mysqli->query('SELECT * FROM cellulari WHERE idProdotto = ' . intval($_GET['id']));
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $prodotti[] = array($row["idProdotto"], $row["nomeProdotto"], $row["prezzo"], $row["immagine"]);
+        $prodotto = $row;
     }
 } else {
-    printf('No record found.<br />');
+    echo '<br>Nessun prodotto con quell\'ID trovato';
+    exit();
 }
 mysqli_free_result($result);
 $mysqli->close();
-
 ?>
+
+<html lang="en">
 
 <head>
 
@@ -30,8 +26,8 @@ $mysqli->close();
     <meta name="author" content="">
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap" rel="stylesheet">
 
-    <title>Phonify</title>
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <title>Phonify - <?= $prodotto['nomeProdotto'] ?></title>
+
 
     <!-- Additional CSS Files -->
     <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
@@ -44,13 +40,16 @@ $mysqli->close();
     <link rel="stylesheet" href="assets/css/owl-carousel.css">
 
     <link rel="stylesheet" href="assets/css/lightbox.css">
+
+    <link rel="stylesheet" href="css_table/main.css">
+    <link rel="stylesheet" href="css_table/util.css">
     <!--
 
-    TemplateMo 571 Hexashop
+TemplateMo 571 Hexashop
 
-    https://templatemo.com/tm-571-hexashop
+https://templatemo.com/tm-571-hexashop
 
-    -->
+-->
 </head>
 
 <body>
@@ -79,7 +78,7 @@ $mysqli->close();
                         <!-- ***** Logo End ***** -->
                         <!-- ***** Menu Start ***** -->
                         <ul class="nav">
-                            <li class="scroll-to-section"><a href="#" class="active">Home</a></li>
+                            <li class="scroll-to-section"><a href="index.php">Home</a></li>
                             <li class="scroll-to-section"><a href="cart.php"><i class="bi bi-cart" style="font-size: 1.5rem"></i> 0</a></li>
                             <li class="submenu">
                                 <a>Informazioni</a>
@@ -91,17 +90,17 @@ $mysqli->close();
                             <?php
                             if (isset($account)) {
                                 echo '
-                            <li class="submenu">
-                                <a><i class="bi bi-person-circle" style="font-size: 1.5rem"></i></a>
-                                <ul>
-                                    <li><a class="active" style="color: black"><b>' . $account->username . '</b></a></li>
-                                    <li><a href="api/logout.php">Logout <i class="bi bi-box-arrow-left"></i> </a></li>
-                                </ul>
-                            </li>';
+                                <li class="submenu">
+                                    <a><i class="bi bi-person-circle" style="font-size: 1.5rem"></i></a>
+                                    <ul>
+                                        <li><a class="active" style="color: black"><b>' . $account->username . '</b></a></li>
+                                        <li><a href="api/logout.php">Logout <i class="bi bi-box-arrow-left"></i> </a></li>
+                                    </ul>
+                                </li>';
                             } else {
                                 echo '
-                            <li class="scroll-to-section"><a href="login.php">Accedi</a></li>
-                            ';
+                                <li class="scroll-to-section"><a href="login.php">Accedi</a></li>
+                                ';
                             }
                             ?>
                         </ul>
@@ -117,60 +116,76 @@ $mysqli->close();
     </header>
     <!-- ***** Header Area End ***** -->
 
-    <!-- ***** Products Area Starts ***** -->
-    <section class="section" id="products" style="padding-top: 3rem;">
+    <br><br><br>
+    <!-- ***** Product Area Starts ***** -->
+    <section class="section" id="product">
         <div class="container">
             <div class="row">
-                <div class="col-lg-5"></div>
-                <div class="col-lg-2">
-                    <div class="section-heading">
-                        <h2>Home</h2>
-                        <span style="font-size: 0.75rem">Scopri tutti i nostri prodotti</span>
+                <div class="col-lg-8">
+                    <div class="left-images" style="display: flex; justify-content: center;">
+                        <?= '<img src="data:image/jpg;base64,' . base64_encode($prodotto['immagine']) . '" alt="" style="width: 25rem; height: auto;">' ?>
                     </div>
                 </div>
-                <div class="col-lg-5 colonna5" style="justify-content: right; display: flex; align-items: center">
-                    <div class="search-box">
-                        <input type="text" placeholder=" " onkeyup="search();">
-                        <button type="reset" onclick="removeContent()"></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row row_on_phone" style="justify-content: center">
-                <?php
-                foreach ($prodotti as $prodotto) {
-                    echo '
-                    <div class="colonna">
-                        <div class="item">
-                            <div class="thumb" style="width: fit-content">
-                                <div class="hover-content">
-                                    <ul>
-                                        <li style="margin: 0 auto;"><a href="single-product.php?id=' . $prodotto[0] . '"><i class="fa fa-eye"></i></a></li>
-                                        <li style="margin: 0 auto;"><a href="single-product.php?id=' . $prodotto[0] . '"><i class="fa fa-shopping-cart"></i></a></li>
-                                    </ul>
-                                </div>
-                                <img class="img_on_phone" src="data:image/jpg;base64,' . base64_encode($prodotto[3]) . '" alt="">
-                            </div>
-                            <div class="down-content">
-                                <a href="single-product.php/?id=' . $prodotto[0] . '" class="nomeprodotto" id="' . $prodotto[0] . '"><h4>' . $prodotto[1] . '</h4></a>
-                                <span>' . $prodotto[2] . '€</span>
+                <div class="col-lg-4">
+                    <div class="right-content">
+                        <h4><?= $prodotto['nomeProdotto'] ?></h4>
+                        <span class="price"><?= $prodotto['prezzo'] ?> €</span>
+                        <!-- 
+                    <div class="quantity-content">
+                        <div class="left-content">
+                            <h6>No. of Orders</h6>
+                        </div>
+                        <div class="right-content">
+                            <div class="quantity buttons_added">
+                                <input type="button" value="-" class="minus"><input type="number" step="1" min="1" max="" name="quantity" value="1" title="Qty" class="input-text qty text" size="4" pattern="" inputmode=""><input type="button" value="+" class="plus">
                             </div>
                         </div>
                     </div>
-                    ';
-                    /*
-                        0 -> idProdotto
-                        1 -> nomeProdotto
-                        2 -> prezzo
-                        3 -> immagine
-                    */
-                }
-                ?>
+                    -->
+                        <br>
+                        <div class="table100">
+                            <table style="border: 2px">
+                                <tbody>
+                                    <tr>
+                                        <td class="column1"><b>Marca</b></td>
+                                        <td class="column2"><?= $prodotto['marca'] ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="column1"><b>RAM</b></td>
+                                        <td class="column2"><?= $prodotto['RAM'] ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="column1"><b>Capacità</b></td>
+                                        <td class="column2"><?= $prodotto['capacita'] ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="column1"><b>Colore</b></td>
+                                        <td class="column2"><?= $prodotto['colore'] ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="column1"><b>OS</b></td>
+                                        <td class="column2"><?= $prodotto['os'] ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="column1"><b>Dimensioni</b></td>
+                                        <td class="column2"><?= $prodotto['dimensioni'] ?></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                        <div class="total" style="margin-top: 20px">
+                            <div class="main-border-button"><a href="api/cart.php">Aggiungi al carrello</a></div>
+                        </div>
+                    </div>
+                </div>
+                <span style="margin-top: 40px;margin-left: 30px;margin-right: 30px;">
+                    <?= $prodotto['descrizione'] ?>
+                </span>
             </div>
         </div>
     </section>
-    <!-- ***** Products Area Ends ***** -->
+    <!-- ***** Product Area Ends ***** -->
 
     <!-- ***** Footer Start ***** -->
     <footer>
@@ -192,7 +207,7 @@ $mysqli->close();
                 <div class="col-lg-3 colonna3">
                     <h4>Pagine</h4>
                     <ul>
-                        <li><a href="#" class="active">Home</a></li>
+                        <li><a href="index.php">Home</a></li>
                         <li><a href="cart.php">Carrello</a></li>
                         <li><a href="../..">Chi sono</a></li>
                         <li><a href="dovesiamo.php">Dove siamo</a></li>
@@ -207,6 +222,7 @@ $mysqli->close();
             </div>
         </div>
     </footer>
+
 
 
     <!-- jQuery -->
@@ -227,10 +243,10 @@ $mysqli->close();
     <script src="assets/js/slick.js"></script>
     <script src="assets/js/lightbox.js"></script>
     <script src="assets/js/isotope.js"></script>
+    <script src="assets/js/quantity.js"></script>
 
     <!-- Global Init -->
     <script src="assets/js/custom.js"></script>
-    <script src="assets/js/searchbar.js"></script>
 
     <script>
         $(function() {
