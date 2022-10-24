@@ -6,20 +6,6 @@ session_start();
 if (isset($_SESSION['session']) && (!isset($_SESSION['codice']) or $_SESSION['codice'] === -1)) {
     $account = json_decode(base64_decode($_SESSION['session']));
 }
-
-include 'config.php';
-
-$result = $mysqli->query('SELECT idProdotto, nomeProdotto, prezzo, immagine FROM cellulari WHERE quantita > 0 ORDER BY idProdotto ASC');
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $prodotti[] = $row;
-    }
-} else {
-    printf('No record found.<br />');
-}
-mysqli_free_result($result);
-$mysqli->close();
-
 ?>
 
 <head>
@@ -79,12 +65,11 @@ $mysqli->close();
                         <!-- ***** Logo End ***** -->
                         <!-- ***** Menu Start ***** -->
                         <ul class="nav">
-                            <li class="scroll-to-section"><a href="#" class="active">Home</a></li>
-                            <li class="scroll-to-section"><a href="cart.php"><i class="bi bi-cart" style="font-size: 1.5rem"></i> 0</a></li>
+                            <li class="scroll-to-section"><a href="index.php/..">Home</a></li>
                             <li class="submenu">
                                 <a>Informazioni</a>
                                 <ul>
-                                    <li><a href="orari.php">Orari&nbsp;&nbsp;<i class="bi bi-clock" style="font-size: 1rem"></i></a></li>
+                                    <li><a href="#" class="active" style="color: #00000080 !important;">Orari&nbsp;&nbsp;<i class="bi bi-clock" style="font-size: 1rem"></i></a></li>
                                     <li><a href="dovesiamo.php">Dove siamo&nbsp;&nbsp;<i class="bi bi-geo" style="font-size: 1rem"></i></a></li>
                                     <li><a href="../.." target="_blank">Crediti &nbsp;<i class="bi bi-code-slash" style="font-size: 1rem"></i></a></li>
                                 </ul>
@@ -119,52 +104,46 @@ $mysqli->close();
     <!-- ***** Header Area End ***** -->
 
     <!-- ***** Products Area Starts ***** -->
-    <section class="section" id="products" style="padding-top: 3rem;">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-5"></div>
-                <div class="col-lg-2">
-                    <div class="section-heading">
-                        <h2>Home</h2>
-                        <span style="font-size: 0.75rem">Scopri tutti i nostri prodotti</span>
-                    </div>
-                </div>
-                <div class="col-lg-5 colonna5" style="justify-content: right; display: flex; align-items: center">
-                    <div class="search-box">
-                        <input type="text" placeholder=" " onkeyup="search();">
-                        <button type="reset" onclick="removeContent()"></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row row_on_phone" style="justify-content: center">
-                <?php
-                foreach ($prodotti as $prodotto) {
-                    echo '
-                    <div class="colonna">
-                        <div class="item">
-                            <div class="thumb" style="width: fit-content">
-                                <div class="hover-content">
-                                    <ul>
-                                        <li style="margin: 0 auto;"><a href="single-product.php?id=' . $prodotto["idProdotto"] . '"><i class="fa fa-eye"></i></a></li>
-                                        <li style="margin: 0 auto;"><a href="single-product.php?id=' . $prodotto["idProdotto"] . '"><i class="fa fa-shopping-cart"></i></a></li>
-                                    </ul>
-                                </div>
-                                <img class="img_on_phone" src="data:image/jpg;base64,' . base64_encode($prodotto["immagine"]) . '" alt="">
-                            </div>
-                            <div class="down-content">
-                                <a href="single-product.php/?id=' . $prodotto["idProdotto"] . '" class="nomeprodotto" id="' . $prodotto["idProdotto"] . '"><h4>' . $prodotto["nomeProdotto"] . '</h4></a>
-                                <span>' . $prodotto["prezzo"] . '€</span>
-                            </div>
-                        </div>
-                    </div>
-                    ';
-                }
-                ?>
-            </div>
-        </div>
-    </section>
+    <main style="margin-top: 8rem; display: flex; justify-content: center; text-align: center; flex-direction: column; align-items: center">
+        <h1>Orari</h1><br>
+        <table border="1" style="width: 500px">
+            <thead>
+                <td><b>Giorno</b></td>
+                <td><b>Mattina</b></td>
+                <td><b>Pomeriggio</b></td>
+            </thead>
+            <tr>
+                <td>Lunedì</td>
+                <td>8:30 - 12:30</td>
+                <td>15:30 - 20:00</td>
+            </tr>
+            <tr>
+                <td>Martedì</td>
+                <td>8:30 - 12:30</td>
+                <td>15:30 - 20:00</td>
+            </tr>
+            <tr>
+                <td>Mercoledì</td>
+                <td>8:30 - 12:30</td>
+                <td>15:30 - 20:00</td>
+            </tr>
+            <tr>
+                <td>Giovedì</td>
+                <td>8:30 - 12:30</td>
+                <td>15:30 - 20:00</td>
+            </tr>
+            <tr>
+                <td>Venerdì</td>
+                <td>8:30 - 12:30</td>
+                <td>15:30 - 20:00</td>
+            </tr>
+            <tr>
+                <td>Sabato</td>
+                <td>8:30 - 12:30</td>
+                <td>-</td>
+            </tr>
+        </table>
+    </main>
     <!-- ***** Products Area Ends ***** -->
 
     <!-- ***** Footer Start ***** -->
@@ -187,9 +166,9 @@ $mysqli->close();
                 <div class="col-lg-3 colonna3">
                     <h4>Pagine</h4>
                     <ul>
-                        <li><a href="#" class="active">Home</a></li>
+                        <li><a href="index.php/..">Home</a></li>
                         <li><a href="cart.php">Carrello</a></li>
-                        <li><a href="orari.php">Orari</a></li>
+                        <li><a href="#" class="active">Orari</a></li>
                         <li><a href="dovesiamo.php">Dove siamo</a></li>
                         <li><a href="../..">Crediti</a></li>
                         <li><a href="api/logout.php">Logout</a></li>

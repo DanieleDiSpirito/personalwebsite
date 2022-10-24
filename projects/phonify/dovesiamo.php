@@ -65,13 +65,13 @@ if(isset($_SESSION['session']) && (!isset($_SESSION['codice']) or $_SESSION['cod
                     <!-- ***** Logo End ***** -->
                     <!-- ***** Menu Start ***** -->
                     <ul class="nav">
-                        <li class="scroll-to-section"><a href="index.php">Home</a></li>
-                        <li class="scroll-to-section"><a href="cart.php"><i class="bi bi-cart" style="font-size: 1.5rem"></i> 0</a></li>
+                        <li class="scroll-to-section"><a href="index.php/..">Home</a></li>
                         <li class="submenu">
                             <a>Informazioni</a>
                             <ul>
-                                <li><a href="../..">Chi sono&nbsp;&nbsp;<i class="bi bi-question-square" style="font-size: 1rem"></i></a></li>
+                                <li><a href="orari.php">Orari&nbsp;&nbsp;<i class="bi bi-clock" style="font-size: 1rem"></i></a></li>
                                 <li><a href="#" class="active" style="color: #00000080 !important;">Dove siamo&nbsp;&nbsp;<i class="bi bi-geo" style="font-size: 1rem"></i></a></li>
+                                <li><a href="../.." target="_blank">Crediti &nbsp;<i class="bi bi-code-slash" style="font-size: 1rem"></i></a></li>
                             </ul>
                         </li>
                         <?php
@@ -149,10 +149,11 @@ if(isset($_SESSION['session']) && (!isset($_SESSION['codice']) or $_SESSION['cod
             <div class="col-lg-3 colonna3">
                 <h4>Pagine</h4>
                 <ul>
-                    <li><a href="index.php">Home</a></li>
+                    <li><a href="index.php/..">Home</a></li>
                     <li><a href="cart.php">Carrello</a></li>
-                    <li><a href="../..">Chi sono</a></li>
+                    <li><a href="orari.php">Orari</a></li>
                     <li><a href="#" class="active">Dove siamo</a></li>
+                    <li><a href="../..">Crediti</a></li>
                     <li><a href="api/logout.php">Logout</a></li>
                 </ul>
             </div>

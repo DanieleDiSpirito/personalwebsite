@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 
 <?php
+session_start();
+if (isset($_SESSION['session']) && (!isset($_SESSION['codice']) or $_SESSION['codice'] === -1)) {
+    $account = json_decode(base64_decode($_SESSION['session']));
+}
+
 include 'config.php';
 
-$result = $mysqli->query('SELECT * FROM cellulari WHERE idProdotto = ' . intval($_GET['id']));
+$result = $mysqli->query('SELECT * FROM cellulari WHERE idProdotto = ' . intval($_GET['id']) . ' AND quantita > 0');
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $prodotto = $row;
@@ -78,13 +83,14 @@ https://templatemo.com/tm-571-hexashop
                         <!-- ***** Logo End ***** -->
                         <!-- ***** Menu Start ***** -->
                         <ul class="nav">
-                            <li class="scroll-to-section"><a href="index.php">Home</a></li>
+                            <li class="scroll-to-section"><a href="index.php/..">Home</a></li>
                             <li class="scroll-to-section"><a href="cart.php"><i class="bi bi-cart" style="font-size: 1.5rem"></i> 0</a></li>
                             <li class="submenu">
                                 <a>Informazioni</a>
                                 <ul>
-                                    <li><a href="../..">Chi sono&nbsp;&nbsp;<i class="bi bi-question-square" style="font-size: 1rem"></i></a></li>
+                                <li><a href="orari.php">Orari&nbsp;&nbsp;<i class="bi bi-clock" style="font-size: 1rem"></i></a></li>
                                     <li><a href="dovesiamo.php">Dove siamo&nbsp;&nbsp;<i class="bi bi-geo" style="font-size: 1rem"></i></a></li>
+                                    <li><a href="../.." target="_blank">Crediti &nbsp;<i class="bi bi-code-slash" style="font-size: 1rem"></i></a></li>
                                 </ul>
                             </li>
                             <?php
@@ -207,10 +213,11 @@ https://templatemo.com/tm-571-hexashop
                 <div class="col-lg-3 colonna3">
                     <h4>Pagine</h4>
                     <ul>
-                        <li><a href="index.php">Home</a></li>
+                        <li><a href="index.php/..">Home</a></li>
                         <li><a href="cart.php">Carrello</a></li>
-                        <li><a href="../..">Chi sono</a></li>
+                        <li><a href="orari.php">Orari</a></li>
                         <li><a href="dovesiamo.php">Dove siamo</a></li>
+                        <li><a href="../..">Crediti</a></li>
                         <li><a href="api/logout.php">Logout</a></li>
                     </ul>
                 </div>
