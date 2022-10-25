@@ -2546,5 +2546,9 @@ responsive
 }
 
 .input_quantita {
-  
+  text-align: center; 
+  width: 50px;
+  height: auto;
+  border: 2px solid #111 !important;
+  margin-left: 67%;
 }

@@ -137,41 +137,43 @@ if ($stmt->bind_result($idProdotto, $nomeProdotto, $prezzo, $descrizione, $immag
                 </div>
             </div>
         </div>
-        <div class="container">
-            <div class="row row_on_phone" style="justify-content: center">
-                <?php
-                if(isset($prodotti)) {
-                    foreach ($prodotti as $prodotto) {
-                        echo '
-                        <div class="colonna">
-                            <div class="item">
-                                <div class="thumb" style="width: fit-content">
-                                    <div class="hover-content">
-                                        <ul>
-                                            <li style="margin: 0 auto;"><a href="single-product.php?id=' . $prodotto["idProdotto"] . '"><i class="fa fa-eye"></i></a></li>
-                                            <li style="margin: 0 auto;"><a href="api/cart.php?id=' . $prodotto["idProdotto"] . '"><i class="bi bi-cart-x-fill"></i></a></li>
-                                        </ul>
+        <form method="POST" action="buy.php" name="form-carrello">
+            <div class="container">
+                <div class="row row_on_phone" style="justify-content: center">
+                    <?php
+                    if(isset($prodotti)) {
+                        foreach ($prodotti as $prodotto) {
+                            echo '
+                            <div class="colonna">
+                                <div class="item">
+                                    <div class="thumb" style="width: fit-content">
+                                        <div class="hover-content">
+                                            <ul>
+                                                <li style="margin: 0 auto;"><a href="single-product.php?id=' . $prodotto["idProdotto"] . '"><i class="fa fa-eye"></i></a></li>
+                                                <li style="margin: 0 auto;"><a href="api/cart.php?id=' . $prodotto["idProdotto"] . '"><i class="bi bi-cart-x-fill"></i></a></li>
+                                            </ul>
+                                        </div>
+                                        <img class="img_on_phone" src="data:image/jpg;base64,' . base64_encode($prodotto["immagine"]) . '" alt="">
                                     </div>
-                                    <img class="img_on_phone" src="data:image/jpg;base64,' . base64_encode($prodotto["immagine"]) . '" alt="">
+                                    <div class="down-content">
+                                        <a href="single-product.php?id=' . $prodotto["idProdotto"] . '" class="nomeprodotto" id="' . $prodotto["idProdotto"] . '"><h4>' . $prodotto["nomeProdotto"] . '</h4></a>
+                                        <span>' . $prodotto["prezzo"] . '€</span>
+                                    </div>
+                                    <input type="number" name="quantita'.$prodotto["idProdotto"].'" min="1" max="'.$prodotto["quantitaMax"].'" value="'.$prodotto['quantita'].'" class="input_quantita">
                                 </div>
-                                <div class="down-content">
-                                    <a href="single-product.php?id=' . $prodotto["idProdotto"] . '" class="nomeprodotto" id="' . $prodotto["idProdotto"] . '"><h4>' . $prodotto["nomeProdotto"] . '</h4></a>
-                                    <span>' . $prodotto["prezzo"] . '€</span>
-                                </div>
-                                <input type="number" min="1" max="'.$prodotto["quantitaMax"].'" value="'.$prodotto['quantita'].'" class="input_quantita">
                             </div>
-                        </div>
-                        ';
+                            ';
+                        }
+                    } else {
+                        echo '
+                        <div>
+                            <h5>Il carrello è vuoto</h5><br>
+                        </div>';
                     }
-                } else {
-                    echo '
-                    <div>
-                        <h5>Il carrello è vuoto</h5><br>
-                    </div>';
-                }
-                ?>
+                    ?>
+                </div>
             </div>
-        </div>
+        </form>
     </section>
     <!-- ***** Products Area Ends ***** -->
 
