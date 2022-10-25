@@ -5,28 +5,20 @@
 session_start();
 if (isset($_SESSION['session']) && (!isset($_SESSION['codice']) or $_SESSION['codice'] === -1)) {
     $account = json_decode(base64_decode($_SESSION['session']));
+} else {
+    header('Location: index.php/..');
 }
 
 include 'config.php';
 
-$result = $mysqli->query('SELECT idProdotto, nomeProdotto, prezzo, immagine FROM cellulari WHERE quantita > 0 ORDER BY idProdotto ASC');
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $prodotti[] = $row;
+$stmt = $mysqli->prepare('SELECT cellulari.idProdotto, nomeProdotto, prezzo, descrizione, immagine, quantita FROM cellulari, utenti, carrelli WHERE utenti.username = ? AND utenti.idUtente = carrelli.idUtente AND cellulari.idProdotto = carrelli.idProdotto');
+$stmt->bind_param('s', $account->username);
+$stmt->execute();
+if ($stmt->bind_result($idProdotto, $nomeProdotto, $prezzo, $descrizione, $immagine, $quantitaMax)) {
+    while($stmt->fetch()) {
+        $prodotti[] = array('idProdotto' => $idProdotto, 'nomeProdotto' => $nomeProdotto, 'prezzo' => $prezzo, 'descrizione' => $descrizione, 'immagine' => $immagine, 'quantita' => 1, 'quantitaMax' => $quantitaMax);
     }
-} else {
-    printf('No record found.<br />');
-}
-mysqli_free_result($result);
-
-if(isset($account)) {
-    $stmt = $mysqli->prepare('SELECT COUNT(idCarrello) FROM carrelli, utenti WHERE username=? AND carrelli.idUtente = utenti.idUtente');
-    $stmt->bind_param('s', $account->username);
-    $stmt->execute();
-    if ($stmt->bind_result($len_carrello)) {
-        $stmt->fetch();
-        $stmt->close();
-    }
+    $stmt->close();
 }
 
 ?>
@@ -88,8 +80,7 @@ if(isset($account)) {
                         <!-- ***** Logo End ***** -->
                         <!-- ***** Menu Start ***** -->
                         <ul class="nav">
-                            <li class="scroll-to-section"><a href="#" class="active">Home</a></li>
-                            <?php if(isset($account)) echo '<li class="scroll-to-section"><a href="cart.php"><i class="bi bi-cart" style="font-size: 1.5rem"></i>&nbsp;'.$len_carrello.'</a></li>'; ?>
+                            <li class="scroll-to-section"><a href="index.php/..">Home</a></li>
                             <li class="submenu">
                                 <a>Informazioni</a>
                                 <ul>
@@ -134,8 +125,8 @@ if(isset($account)) {
                 <div class="col-lg-5"></div>
                 <div class="col-lg-2">
                     <div class="section-heading">
-                        <h2>Home</h2>
-                        <span style="font-size: 0.75rem">Scopri tutti i nostri prodotti</span>
+                        <h2>Carrello</h2>
+                        <span style="font-size: 0.75rem">Ecco il tuo carrello</span>
                     </div>
                 </div>
                 <div class="col-lg-5 colonna5" style="justify-content: right; display: flex; align-items: center">
@@ -149,53 +140,34 @@ if(isset($account)) {
         <div class="container">
             <div class="row row_on_phone" style="justify-content: center">
                 <?php
-                $visibilita = '';
-                if(!isset($account)) {
-                    $visibilita = 'style="display: none;"';
-                } else {
-                    if(isset($account)) {
-                        $stmt = $mysqli->prepare('SELECT idProdotto FROM carrelli, utenti WHERE username = ? AND utenti.idUtente = carrelli.idUtente');
-                        $stmt->bind_param('s', $account->username);
-                        $stmt->execute();
-                        if ($stmt->bind_result($prodottoNelCarrello)) {
-                            while($stmt->fetch()) {
-                                $prodottiNelCarrello[] = $prodottoNelCarrello;
-                            }
-                            $stmt->close();
-                        }
-                    }
-                }
-
-                foreach ($prodotti as $prodotto) {
-                    $icona = 'bi bi-cart-plus';
-                    if(isset($prodottiNelCarrello)) {
-                        foreach ($prodottiNelCarrello as $idProd) {
-                            if(intval($idProd) === intval($prodotto['idProdotto'])) {
-                                $icona = 'bi bi-cart-x-fill';
-                                break;
-                            }
-                        }
-                    }
-
-                    echo '
-                    <div class="colonna">
-                        <div class="item">
-                            <div class="thumb" style="width: fit-content">
-                                <div class="hover-content">
-                                    <ul>
-                                        <li style="margin: 0 auto;"><a href="single-product.php?id=' . $prodotto["idProdotto"] . '"><i class="fa fa-eye"></i></a></li>
-                                        <li style="margin: 0 auto;"><a href="api/cart.php?id=' . $prodotto["idProdotto"] . '" ' . $visibilita . '><i class="' . $icona . '"></i></a></li>
-                                    </ul>
+                if(isset($prodotti)) {
+                    foreach ($prodotti as $prodotto) {
+                        echo '
+                        <div class="colonna">
+                            <div class="item">
+                                <div class="thumb" style="width: fit-content">
+                                    <div class="hover-content">
+                                        <ul>
+                                            <li style="margin: 0 auto;"><a href="single-product.php?id=' . $prodotto["idProdotto"] . '"><i class="fa fa-eye"></i></a></li>
+                                            <li style="margin: 0 auto;"><a href="api/cart.php?id=' . $prodotto["idProdotto"] . '"><i class="bi bi-cart-x-fill"></i></a></li>
+                                        </ul>
+                                    </div>
+                                    <img class="img_on_phone" src="data:image/jpg;base64,' . base64_encode($prodotto["immagine"]) . '" alt="">
                                 </div>
-                                <img class="img_on_phone" src="data:image/jpg;base64,' . base64_encode($prodotto["immagine"]) . '" alt="">
-                            </div>
-                            <div class="down-content">
-                                <a href="single-product.php?id=' . $prodotto["idProdotto"] . '" class="nomeprodotto" id="' . $prodotto["idProdotto"] . '"><h4>' . $prodotto["nomeProdotto"] . '</h4></a>
-                                <span>' . $prodotto["prezzo"] . '€</span>
+                                <div class="down-content">
+                                    <a href="single-product.php?id=' . $prodotto["idProdotto"] . '" class="nomeprodotto" id="' . $prodotto["idProdotto"] . '"><h4>' . $prodotto["nomeProdotto"] . '</h4></a>
+                                    <span>' . $prodotto["prezzo"] . '€</span>
+                                </div>
+                                <input type="number" min="1" max="'.$prodotto["quantitaMax"].'" value="'.$prodotto['quantita'].'" class="input_quantita">
                             </div>
                         </div>
-                    </div>
-                    ';
+                        ';
+                    }
+                } else {
+                    echo '
+                    <div>
+                        <h5>Il carrello è vuoto</h5><br>
+                    </div>';
                 }
                 ?>
             </div>
@@ -223,11 +195,11 @@ if(isset($account)) {
                 <div class="col-lg-3 colonna3">
                     <h4>Pagine</h4>
                     <ul>
-                        <li><a href="#" class="active">Home</a></li>
+                        <li><a href="index.php/..">Home</a></li>
                         <li><a href="cart.php">Carrello</a></li>
                         <li><a href="orari.php">Orari</a></li>
                         <li><a href="dovesiamo.php">Dove siamo</a></li>
-                        <li><a href="../..">Crediti</a></li>
+                        <li><a href="../.." target="_blank">Crediti</a></li>
                         <li><a href="api/logout.php">Logout</a></li>
                     </ul>
                 </div>

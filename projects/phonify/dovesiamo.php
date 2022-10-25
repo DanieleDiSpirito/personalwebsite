@@ -153,7 +153,7 @@ if(isset($_SESSION['session']) && (!isset($_SESSION['codice']) or $_SESSION['cod
                     <li><a href="cart.php">Carrello</a></li>
                     <li><a href="orari.php">Orari</a></li>
                     <li><a href="#" class="active">Dove siamo</a></li>
-                    <li><a href="../..">Crediti</a></li>
+                    <li><a href="../.." target="_blank">Crediti</a></li>
                     <li><a href="api/logout.php">Logout</a></li>
                 </ul>
             </div>

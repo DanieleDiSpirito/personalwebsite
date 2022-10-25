@@ -18,7 +18,17 @@ if ($result->num_rows > 0) {
     exit();
 }
 mysqli_free_result($result);
-$mysqli->close();
+
+if(isset($account)) {
+    $stmt = $mysqli->prepare('SELECT COUNT(idCarrello) FROM carrelli, utenti WHERE username=? AND carrelli.idUtente = utenti.idUtente');
+    $stmt->bind_param('s', $account->username);
+    $stmt->execute();
+    if ($stmt->bind_result($len_carrello)) {
+        $stmt->fetch();
+        $stmt->close();
+    }
+}
+
 ?>
 
 <html lang="en">
@@ -84,7 +94,7 @@ https://templatemo.com/tm-571-hexashop
                         <!-- ***** Menu Start ***** -->
                         <ul class="nav">
                             <li class="scroll-to-section"><a href="index.php/..">Home</a></li>
-                            <li class="scroll-to-section"><a href="cart.php"><i class="bi bi-cart" style="font-size: 1.5rem"></i> 0</a></li>
+                            <?php if(isset($account)) echo '<li class="scroll-to-section"><a href="cart.php"><i class="bi bi-cart" style="font-size: 1.5rem"></i>&nbsp;'.$len_carrello.'</a></li>'; ?>
                             <li class="submenu">
                                 <a>Informazioni</a>
                                 <ul>
@@ -180,9 +190,33 @@ https://templatemo.com/tm-571-hexashop
                             </table>
                         </div>
                         <br>
-                        <div class="total" style="margin-top: 20px">
-                            <div class="main-border-button"><a href="api/cart.php">Aggiungi al carrello</a></div>
-                        </div>
+                        <?php 
+                            if(isset($account)) {
+                                $stmt = $mysqli->prepare('SELECT 1 FROM carrelli, utenti WHERE username = ? AND carrelli.idUtente = utenti.idUtente AND idProdotto = ?');
+                                $stmt->bind_param('si', $account->username, $_GET['id']);
+                                $stmt->execute();
+                                if ($stmt->bind_result($nel_carrello)) {
+                                    $stmt->fetch();
+                                    $stmt->close();
+                                }
+                                $mysqli->close();
+
+                                if($nel_carrello) {
+                                    $scritta = 'Rimuovi dal carrello';
+                                } else {
+                                    $scritta = 'Aggiungi al carrello';
+                                }
+                                
+                                echo '
+                                <div class="total" style="margin-top: 20px">
+                                    <div class="main-border-button">
+                                        <a href="api/cart.php?id='.$_GET['id'].'">
+                                        ' . $scritta . '
+                                        </a>
+                                    </div>
+                                </div>';
+                            }
+                        ?>
                     </div>
                 </div>
                 <span style="margin-top: 40px;margin-left: 30px;margin-right: 30px;">
@@ -217,7 +251,7 @@ https://templatemo.com/tm-571-hexashop
                         <li><a href="cart.php">Carrello</a></li>
                         <li><a href="orari.php">Orari</a></li>
                         <li><a href="dovesiamo.php">Dove siamo</a></li>
-                        <li><a href="../..">Crediti</a></li>
+                        <li><a href="../.." target="_blank">Crediti</a></li>
                         <li><a href="api/logout.php">Logout</a></li>
                     </ul>
                 </div>
