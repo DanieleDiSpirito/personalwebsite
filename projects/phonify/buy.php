@@ -6,20 +6,184 @@ session_start();
 if (isset($_SESSION['session']) && (!isset($_SESSION['codice']) or $_SESSION['codice'] === -1)) {
     $account = json_decode(base64_decode($_SESSION['session']));
 } else {
-    header('Location: index.php/..');
+    echo 'Devi essere loggato';
+    exit(0);
+}
+
+switch(count($_POST)) {
+    case 0:
+        echo 'Nessun prodotto comprato';
+        exit(0);
+    case 1:
+        $title = 'Acquisto effettuato';
+    default:
+        $title = 'Acquisti effettuati';
 }
 
 include 'config.php';
 
-$stmt = $mysqli->prepare('SELECT cellulari.idProdotto, nomeProdotto, prezzo, descrizione, immagine, quantita FROM cellulari, utenti, carrelli WHERE utenti.username = ? AND utenti.idUtente = carrelli.idUtente AND cellulari.idProdotto = carrelli.idProdotto');
-$stmt->bind_param('s', $account->username);
-$stmt->execute();
-if ($stmt->bind_result($idProdotto, $nomeProdotto, $prezzo, $descrizione, $immagine, $quantitaMax)) {
-    while($stmt->fetch()) {
-        $prodotti[] = array('idProdotto' => $idProdotto, 'nomeProdotto' => $nomeProdotto, 'prezzo' => $prezzo, 'descrizione' => $descrizione, 'immagine' => $immagine, 'quantita' => 1, 'quantitaMax' => $quantitaMax);
+$result = $mysqli->query('SELECT idProdotto, nomeProdotto, prezzo, immagine FROM cellulari');
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $prodotti[] = $row;
     }
+} else {
+    printf('No record found.<br />');
+}
+mysqli_free_result($result);
+
+// INVIO MAIL
+
+foreach($prodotti as $prodotto) {
+    if(isset($_POST['quantita'.$prodotto['idProdotto']]) and $_POST['quantita'.$prodotto['idProdotto']] > 0) {
+        $prodottiAcquistati[] = array('id' => $prodotto['idProdotto'], 'quantita' => $_POST['quantita'.$prodotto['idProdotto']]);
+    }
+}
+
+// prendo l'id dell'utente
+$result = $mysqli->query('SELECT idUtente FROM utenti WHERE username = "' . $account->username . '"');
+if ($result->num_rows > 0) {
+    if($row = $result->fetch_assoc()) {
+        $id_account = $row['idUtente'];
+    }
+}
+
+// controllo che le quantità richieste non superino le quantità disponibili 
+foreach($prodottiAcquistati as $prodottoAcquistato) {
+    $stmt = $mysqli->prepare('SELECT quantita FROM cellulari WHERE idProdotto = ?');
+    $stmt->bind_param('i', $prodottoAcquistato['id']);
+    $stmt->execute();
+    if ($stmt->bind_result($quantitaDisponibile)) {
+        $stmt->fetch();
+        $quantitaDisponibili[$prodottoAcquistato['id']] = $quantitaDisponibile;
+        $stmt->close();
+    }
+
+    if($quantitaDisponibile < $prodottoAcquistato['quantita']) {
+        echo 'Uno dei prodotti nel carrello non è più disponibile';
+        exit(1);
+    }
+}
+
+// inserisco dentro la tabella acquisti i prodotti acquistati con le relative quantità
+foreach($prodottiAcquistati as $prodottoAcquistato) {
+    $stmt = $mysqli->prepare('INSERT INTO acquisti(idUtente, idProdotto, quantita, dataAcquisto) VALUES (?, ?, ?, ?)');
+    $data = date('Y-m-d H:i:s');
+    $stmt->bind_param('iiis', $id_account, $prodottoAcquistato['id'], $prodottoAcquistato['quantita'],  $data);
+    $stmt->execute();
     $stmt->close();
 }
+
+// modifico le quantità nella tabella dei prodotti
+foreach($prodottiAcquistati as $prodottoAcquistato) {
+    $stmt = $mysqli->prepare('UPDATE cellulari SET quantita = ? WHERE idProdotto = ?');
+    $nuovaQuantita = intval($quantitaDisponibili[$prodottoAcquistato['id']]) - intval($prodottoAcquistato['quantita']);
+    $stmt->bind_param('is', $nuovaQuantita, $prodottoAcquistato['id']);
+    $stmt->execute();
+    $stmt->close();
+}
+
+// EMAIL CON IMMAGINE (NON FUNZIONA)
+/*
+$boundary = "==String_Boundary_x" .md5(time()). "x";
+
+$riga = '';
+foreach($prodotti as $prodotto) {
+    foreach($prodottiAcquistati as $prodottoAcquistato) {
+        if($prodotto['idProdotto'] === $prodottoAcquistato['id']) {
+            $riga .= '
+            <tr>
+                <td style="width: 150px">'.$prodotto["nomeProdotto"].'</td>
+                <td style="width: 100px">'.$prodotto["prezzo"].'€</td>
+                <td style="width: 60px">'.$prodottoAcquistato["quantita"].'</td>
+                <td style="width: 300px"><img src="cid:'.$prodotto["idProdotto"].'" style="width: 95%"></img></td>
+            </tr>
+            --'.$boundary.'
+            Content-ID: <'.$prodotto["idProdotto"].'>
+            Content-Type: image/jpeg
+            Content-Transfer-Encoding: base64
+            '.base64_encode($prodotto['immagine']).'
+            --'.$boundary.'--
+            ';
+            break;
+        }
+    }
+}
+
+$message = '
+<html>
+    <head>
+        <title>Acquisti</title>
+    </head>
+    <body>
+        <h1 style="text-align: center">Acquisti</h1>
+        <table border="1" style="text-align: center; width: 500px; padding: 0 !important; margin: 0 auto; border: 0.5px solid #000; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+            <thread>
+                <td style="border: 0">Nome</td>
+                <td style="border: 0">Prezzo</td>
+                <td style="border: 0">Quantita</td>
+                <td style="border: 0">Immagine</td>
+            </thread>
+            '.$riga.'
+        </table>
+    </body>
+</html>
+';
+
+$headers[] = 'MIME-Version: 1.0';
+$headers[] = 'Content-type: multipart/related; charset=utf-8';
+$headers[] = 'type="multipart/alternative";';
+$headers[] = 'boundary="'.$boundary.'"';
+$headers[] = 'From: "Daniele Di Spirito" <dispiritodaniele.noreply@gmail.com>';
+
+mail($account->email, 'Phonify | Ecco i tuoi acquisti', $message, implode("\r\n", $headers));
+*/
+
+// EMAIL SENZA IMMAGINE
+
+$riga = '';
+foreach($prodotti as $prodotto) {
+    foreach($prodottiAcquistati as $prodottoAcquistato) {
+        if($prodotto['idProdotto'] === $prodottoAcquistato['id']) {
+            $riga .= '
+            <tr>
+                <td style="width: 120px"><a href="dispiritodaniele.altervista.org/projects/phonify/single-product.php?id='.$prodotto["idProdotto"].'">Clicca qui per vederlo</a></td>
+                <td style="width: 150px">'.$prodotto["nomeProdotto"].'</td>
+                <td style="width: 100px">'.$prodotto["prezzo"].'€</td>
+                <td style="width: 60px">'.$prodottoAcquistato["quantita"].'</td>
+            </tr>
+            ';
+            break;
+        }
+    }
+}
+
+$message = '
+<html>
+    <head>
+        <title>Acquisti</title>
+    </head>
+    <body>
+        <h1 style="text-align: center">Acquisti</h1>
+        <table border="1" style="text-align: center; width: 500px; padding: 0 !important; margin: 0 auto; border: 0.5px solid #000; border-top-left-radius: 15px; border-top-right-radius: 15px; margin-bottom: 20px;">
+            <tr>
+                <td style="border: 0">Link</td>    
+                <td style="border: 0">Nome</td>
+                <td style="border: 0">Prezzo</td>
+                <td style="border: 0">Quantita</td>
+            </tr>
+            '.$riga.'
+        </table>
+    </body>
+</html>
+';
+
+$headers[] = 'MIME-Version: 1.0';
+$headers[] = 'Content-type: text/html; charset=utf-8';
+$headers[] = 'From: "Daniele Di Spirito" <dispiritodaniele.noreply@gmail.com>';
+
+mail($account->email, 'Phonify | Ecco i tuoi acquisti', $message, implode("\r\n", $headers));
+
 
 ?>
 
@@ -124,86 +288,17 @@ if ($stmt->bind_result($idProdotto, $nomeProdotto, $prezzo, $descrizione, $immag
             <div class="row">
                 <div class="col-lg-12">
                     <div class="section-heading">
-                        <h2>Carrello</h2>
-                        <span style="font-size: 0.75rem">Ecco il tuo carrello</span>
+                        <h1><?=$title?> <i class="bi bi-check-all" style="font-size: 50px"></i></h1>
+                        <br><div style="font-size: 1.25rem">Controlla la tua mail (<u><?=$account->email?></u>)</div>
                     </div>
                 </div>
             </div>
         </div>
-        <form method="POST" action="buy.php" name="form-carrello">
-            <div class="container">
-                <div class="row row_on_phone" style="justify-content: center">
-                    <?php
-                    if(isset($prodotti)) {
-                        foreach ($prodotti as $prodotto) {
-                            echo '
-                            <div class="colonna">
-                                <div class="item">
-                                    <div class="thumb" style="width: fit-content">
-                                        <div class="hover-content">
-                                            <ul>
-                                                <li style="margin: 0 auto;"><a href="single-product.php?id=' . $prodotto["idProdotto"] . '"><i class="fa fa-eye"></i></a></li>
-                                                <li style="margin: 0 auto;"><a href="api/cart.php?id=' . $prodotto["idProdotto"] . '"><i class="bi bi-cart-x-fill"></i></a></li>
-                                            </ul>
-                                        </div>
-                                        <img class="img_on_phone" src="data:image/jpg;base64,' . base64_encode($prodotto["immagine"]) . '" alt="">
-                                    </div>
-                                    <div class="down-content">
-                                        <a href="single-product.php?id=' . $prodotto["idProdotto"] . '" class="nomeprodotto" id="' . $prodotto["idProdotto"] . '"><h4>' . $prodotto["nomeProdotto"] . '</h4></a>
-                                        <span>' . $prodotto["prezzo"] . '€</span>
-                                    </div>
-                                    <input type="number" name="quantita'.$prodotto["idProdotto"].'" min="1" max="'.$prodotto["quantitaMax"].'" value="'.$prodotto['quantita'].'" class="input_quantita" onchange="calcoloPrezzoTotale();">
-                                </div>
-                            </div>
-                            ';
-                        }
-                    } else {
-                        echo '
-                        <div>
-                            <h5>Il carrello è vuoto</h5><br>
-                        </div>';
-                    }
-                    ?>
-                </div>
-            </div>
-            <br><br>
-            <?php
-            if(isset($prodotti)) {
-                echo '
-                <div class="total div_acquisto">
-                    <span style="margin-top: 20px; font-weight: 500; color: #999999; font-size: 20px">Totale: <span id="costoTotale" onload="calcoloPrezzoTotale();"></span></span>
-                    <button type="submit" class="main-border-button bottone_acquisto">
-                        <a style="font-size: 20px !important;">
-                            Acquista&nbsp;<i class="bi bi-currency-euro"></i>
-                        </a>
-                    </button>
-                </div>
-                ';
-            }
-            ?>
-        </form>
     </section>
     <!-- ***** Products Area Ends ***** -->
 
-    <script>
-        window.addEventListener('load', () => {
-            calcoloPrezzoTotale();
-        });
-        
-        const calcoloPrezzoTotale = () => {
-            listaBottoni = document.querySelectorAll('input.input_quantita');
-            listaSpanPrezzi = document.querySelectorAll('#products > form > div.container > div > div > div > div.down-content > span');
-            let totale = 0;
-            for(let i = 0; i < listaBottoni.length; i++) {
-                totale += parseInt(listaBottoni[i].value) * parseFloat(listaSpanPrezzi[i].textContent);
-            }
-            bottonePrezzoTotale = document.querySelector('#costoTotale')
-            bottonePrezzoTotale.textContent = totale.toFixed(2) + '€';
-        }
-    </script>
-
     <!-- ***** Footer Start ***** -->
-    <footer>
+    <footer style="margin-top: 43px !important">
         <div class="container">
             <div class="row" style="align-items: center;">
                 <div class="col-lg-3">
@@ -226,7 +321,7 @@ if ($stmt->bind_result($idProdotto, $nomeProdotto, $prezzo, $descrizione, $immag
                         <li><a href="cart.php">Carrello</a></li>
                         <li><a href="orari.php">Orari</a></li>
                         <li><a href="dovesiamo.php">Dove siamo</a></li>
-                        <li><a href="../.." target="_blank">Crediti</a></li>
+                        <li><a href="../..">Crediti</a></li>
                         <li><a href="api/logout.php">Logout</a></li>
                     </ul>
                 </div>
