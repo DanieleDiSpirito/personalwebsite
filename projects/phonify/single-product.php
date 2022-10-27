@@ -8,13 +8,13 @@ if (isset($_SESSION['session']) && (!isset($_SESSION['codice']) or $_SESSION['co
 
 include 'config.php';
 
-$result = $mysqli->query('SELECT * FROM cellulari WHERE idProdotto = ' . intval($_GET['id']) . ' AND quantita > 0');
+$result = $mysqli->query('SELECT * FROM cellulari WHERE idProdotto = ' . intval($_GET['id']));
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $prodotto = $row;
     }
 } else {
-    echo '<br>Nessun prodotto con quell\'ID trovato';
+    echo 'Nessun prodotto con quell\'ID trovato';
     exit();
 }
 mysqli_free_result($result);
@@ -146,18 +146,6 @@ https://templatemo.com/tm-571-hexashop
                     <div class="right-content">
                         <h4><?= $prodotto['nomeProdotto'] ?></h4>
                         <span class="price"><?= $prodotto['prezzo'] ?> €</span>
-                        <!-- 
-                    <div class="quantity-content">
-                        <div class="left-content">
-                            <h6>No. of Orders</h6>
-                        </div>
-                        <div class="right-content">
-                            <div class="quantity buttons_added">
-                                <input type="button" value="-" class="minus"><input type="number" step="1" min="1" max="" name="quantity" value="1" title="Qty" class="input-text qty text" size="4" pattern="" inputmode=""><input type="button" value="+" class="plus">
-                            </div>
-                        </div>
-                    </div>
-                    -->
                         <br>
                         <div class="table100">
                             <table style="border: 2px">
@@ -190,31 +178,38 @@ https://templatemo.com/tm-571-hexashop
                             </table>
                         </div>
                         <br>
-                        <?php 
+                        <?php
                             if(isset($account)) {
-                                $stmt = $mysqli->prepare('SELECT 1 FROM carrelli, utenti WHERE username = ? AND carrelli.idUtente = utenti.idUtente AND idProdotto = ?');
-                                $stmt->bind_param('si', $account->username, $_GET['id']);
-                                $stmt->execute();
-                                if ($stmt->bind_result($nel_carrello)) {
-                                    $stmt->fetch();
-                                    $stmt->close();
-                                }
-                                $mysqli->close();
-
-                                if($nel_carrello) {
-                                    $scritta = 'Rimuovi dal carrello';
+                                if($prodotto['quantita'] > 0) {
+                                    $stmt = $mysqli->prepare('SELECT 1 FROM carrelli, utenti WHERE username = ? AND carrelli.idUtente = utenti.idUtente AND idProdotto = ?');
+                                    $stmt->bind_param('si', $account->username, $_GET['id']);
+                                    $stmt->execute();
+                                    if ($stmt->bind_result($nel_carrello)) {
+                                        $stmt->fetch();
+                                        $stmt->close();
+                                    }
+                                    $mysqli->close();
+    
+                                    if($nel_carrello) {
+                                        $scritta = 'Rimuovi dal carrello';
+                                    } else {
+                                        $scritta = 'Aggiungi al carrello';
+                                    }
+                                    
+                                    echo '
+                                    <div class="total" style="margin-top: 20px">
+                                        <div class="main-border-button">
+                                            <a href="api/cart.php?id='.$_GET['id'].'">
+                                            ' . $scritta . '
+                                            </a>
+                                        </div>
+                                    </div>';
                                 } else {
-                                    $scritta = 'Aggiungi al carrello';
+                                    echo '
+                                    <div class="total" style="margin-top: 20px; text-align: center; color: darkred; font-weight: 600">
+                                        <i class="bi bi-exclamation-diamond" style="font-size: 1.2rem"></i>&nbsp;&nbsp;Non ci sono quantità disponibili
+                                    </div>';
                                 }
-                                
-                                echo '
-                                <div class="total" style="margin-top: 20px">
-                                    <div class="main-border-button">
-                                        <a href="api/cart.php?id='.$_GET['id'].'">
-                                        ' . $scritta . '
-                                        </a>
-                                    </div>
-                                </div>';
                             }
                         ?>
                     </div>

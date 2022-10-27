@@ -83,6 +83,12 @@ foreach($prodottiAcquistati as $prodottoAcquistato) {
     $stmt->close();
 }
 
+// svuotare il carrello
+$stmt = $mysqli->prepare('DELETE FROM carrelli  WHERE carrelli.idUtente = ?');
+$stmt->bind_param('i', $id_account);
+$stmt->execute();
+$stmt->close();
+
 // EMAIL CON IMMAGINE (NON FUNZIONA)
 /*
 $boundary = "==String_Boundary_x" .md5(time()). "x";
@@ -147,10 +153,10 @@ foreach($prodotti as $prodotto) {
         if($prodotto['idProdotto'] === $prodottoAcquistato['id']) {
             $riga .= '
             <tr>
-                <td style="width: 120px"><a href="dispiritodaniele.altervista.org/projects/phonify/single-product.php?id='.$prodotto["idProdotto"].'">Clicca qui per vederlo</a></td>
-                <td style="width: 150px">'.$prodotto["nomeProdotto"].'</td>
-                <td style="width: 100px">'.$prodotto["prezzo"].'€</td>
-                <td style="width: 60px">'.$prodottoAcquistato["quantita"].'</td>
+                <td style="width: 180px"><a href="https://dispiritodaniele.altervista.org/projects/phonify/single-product.php?id='.$prodotto["idProdotto"].'">Clicca qui per vederlo</a></td>
+                <td style="width: 180px">'.$prodotto["nomeProdotto"].'</td>
+                <td style="width: 180px">'.$prodotto["prezzo"].'€</td>
+                <td style="width: 180px">'.$prodottoAcquistato["quantita"].'</td>
             </tr>
             ';
             break;
@@ -159,23 +165,18 @@ foreach($prodotti as $prodotto) {
 }
 
 $message = '
-<html>
-    <head>
-        <title>Acquisti</title>
-    </head>
-    <body>
         <h1 style="text-align: center">Acquisti</h1>
-        <table border="1" style="text-align: center; width: 500px; padding: 0 !important; margin: 0 auto; border: 0.5px solid #000; border-top-left-radius: 15px; border-top-right-radius: 15px; margin-bottom: 20px;">
+        <br>
+        <table border="1" style="text-align: center; font-size:  15px; height: 100px; padding: 0 !important; margin: 0 auto; border: 0.5px solid #000; border-top-left-radius: 15px; border-top-right-radius: 15px;">
             <tr>
-                <td style="border: 0">Link</td>    
-                <td style="border: 0">Nome</td>
-                <td style="border: 0">Prezzo</td>
-                <td style="border: 0">Quantita</td>
+                <td style="border: 0"><b>Link</b></td>    
+                <td style="border: 0"><b>Nome</b></td>
+                <td style="border: 0"><b>Prezzo</b></td>
+                <td style="border: 0"><b>Quantita</b></td>
             </tr>
             '.$riga.'
         </table>
-    </body>
-</html>
+        <br>
 ';
 
 $headers[] = 'MIME-Version: 1.0';
@@ -183,7 +184,6 @@ $headers[] = 'Content-type: text/html; charset=utf-8';
 $headers[] = 'From: "Daniele Di Spirito" <dispiritodaniele.noreply@gmail.com>';
 
 mail($account->email, 'Phonify | Ecco i tuoi acquisti', $message, implode("\r\n", $headers));
-
 
 ?>
 
