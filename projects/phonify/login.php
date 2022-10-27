@@ -37,19 +37,11 @@
             controllo(serialize(array($username, $password)));
 
             // database connection
-            $db_host = 'localhost';
-            $db_user = 'root';
-            $db_password = '';
-            $db_name = 'my_dispiritodaniele';
-            $conn = new mysqli($db_host, $db_user, $db_password, $db_name);
-            if ($conn->connect_errno) {
-                echo "Failed to connect to MySQL: " . $conn->connect_error;
-                exit();
-            }
+            include 'config.php';
 
             // query
             $password = hash('sha256', $password); //SHA256 password
-            $stmt = $conn->prepare("SELECT email FROM utenti WHERE password=? AND username=?");
+            $stmt = $mysqli->prepare("SELECT email FROM utenti WHERE password=? AND username=?");
             $stmt->bind_param('ss', $password, $username); // pass password and username as string (s)
             $stmt->execute();
             if ($stmt->bind_result($email)) { // there is at least one result

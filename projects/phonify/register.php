@@ -40,19 +40,11 @@
 
         if(empty($error)) {
             // database connection
-            $db_host = 'localhost';
-            $db_user = 'root';
-            $db_password = '';
-            $db_name = 'phonify';
-            $conn = new mysqli($db_host, $db_user, $db_password, $db_name);
-            if ($conn->connect_errno) {
-                echo "Failed to connect to MySQL: " . $conn->connect_error;
-                exit();
-            }
+            include 'config.php';
 
 
             // control query username
-            $stmt = $conn->prepare("SELECT 1 FROM utenti WHERE username = ?"); // BINARY is for CASE SENSITIVE
+            $stmt = $mysqli->prepare("SELECT 1 FROM utenti WHERE username = ?"); // BINARY is for CASE SENSITIVE
             $stmt->bind_param('s', $username);
             if ($stmt->execute()) {
                 $stmt->bind_result($result);
@@ -65,7 +57,7 @@
 
             // control query email
             if (empty($error)) {
-                $stmt = $conn->prepare("SELECT 1 FROM utenti WHERE email = ?");
+                $stmt = $mysqli->prepare("SELECT 1 FROM utenti WHERE email = ?");
                 $stmt->bind_param('s', $email);
                 if ($stmt->execute()) {
                     $stmt->bind_result($result);
@@ -80,12 +72,12 @@
             // query
             $password = hash('sha256', $password); //SHA256 password
             if (empty($error)) {
-                $stmt = $conn->prepare("INSERT INTO utenti(username, email, password) VALUES (?,?,?)");
+                $stmt = $mysqli->prepare("INSERT INTO utenti(username, email, password) VALUES (?,?,?)");
                 $stmt->bind_param('sss', $username, $email, $password); // pass password and username as string (s)
                 if ($stmt->execute()) {
-                    $codice_controllo = rand(1, 9999);
                     session_start();
-                    $_SESSION['session'] = base64_encode(json_encode(array('username' => $username, 'email' => $email, 'password' => $password, 'codice_controllo' => $codice_controllo)));
+                    $_SESSION['session'] = base64_encode(json_encode(array('username' => $username, 'email' => $email, 'password' => $password)));
+                    $_SESSION['codice'] = rand(1, 9999);
                     header('Location: mail_confirm.php');
                 } else {
                     $error = 'Inserimento non avvenuto';

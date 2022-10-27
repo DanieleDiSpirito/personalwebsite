@@ -7,6 +7,10 @@ if (isset($_SESSION['session']) && (!isset($_SESSION['codice']) or $_SESSION['co
     $account = json_decode(base64_decode($_SESSION['session']));
 }
 
+if(isset($account) and $account->username === 'admin') {
+    header('Location: admin');
+}
+
 include 'config.php';
 
 $result = $mysqli->query('SELECT idProdotto, nomeProdotto, prezzo, immagine FROM cellulari WHERE quantita > 0 ORDER BY idProdotto ASC');

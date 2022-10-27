@@ -135,6 +135,7 @@ if ($stmt->bind_result($idProdotto, $nomeProdotto, $prezzo, $descrizione, $immag
                 <div class="row row_on_phone" style="justify-content: center">
                     <?php
                     if(isset($prodotti)) {
+                        $i = 0;
                         foreach ($prodotti as $prodotto) {
                             echo '
                             <div class="colonna">
@@ -152,10 +153,19 @@ if ($stmt->bind_result($idProdotto, $nomeProdotto, $prezzo, $descrizione, $immag
                                         <a href="single-product.php?id=' . $prodotto["idProdotto"] . '" class="nomeprodotto" id="' . $prodotto["idProdotto"] . '"><h4>' . $prodotto["nomeProdotto"] . '</h4></a>
                                         <span>' . $prodotto["prezzo"] . '€</span>
                                     </div>
-                                    <input type="number" name="quantita'.$prodotto["idProdotto"].'" min="1" max="'.$prodotto["quantitaMax"].'" value="'.$prodotto['quantita'].'" class="input_quantita" onchange="calcoloPrezzoTotale();">
+                                    <div class="quantity-content">
+                                        <div class="right-content">
+                                            <div class="quantity buttons_added">
+                                                <input type="button" value="-" class="minus" onclick="diminuzioneQuantita('.$i.')">
+                                                <input type="number" name="quantita'.$prodotto["idProdotto"].'" min="1" max="'.$prodotto["quantitaMax"].'" step="1" value="'.$prodotto['quantita'].'" title="Qty" class="input-text qty text" size="4" pattern="" inputmode="" onchange="calcoloPrezzoTotale();" readonly>
+                                                <input type="button" value="+" class="plus" onclick="aumentoQuantita('.$i.')">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             ';
+                            $i++;
                         }
                     } else {
                         echo '
@@ -171,7 +181,7 @@ if ($stmt->bind_result($idProdotto, $nomeProdotto, $prezzo, $descrizione, $immag
             if(isset($prodotti)) {
                 echo '
                 <div class="total div_acquisto">
-                    <span style="margin-top: 20px; font-weight: 500; color: #999999; font-size: 20px">Totale: <span id="costoTotale" onload="calcoloPrezzoTotale();"></span></span>
+                    <span style="margin-top: 20px; font-weight: 500; color: #999999; font-size: 20px">Totale: <span id="costoTotale"></span></span>
                     <button type="submit" class="main-border-button bottone_acquisto">
                         <a style="font-size: 20px !important;">
                             Acquista&nbsp;<i class="bi bi-currency-euro"></i>
@@ -190,8 +200,8 @@ if ($stmt->bind_result($idProdotto, $nomeProdotto, $prezzo, $descrizione, $immag
             calcoloPrezzoTotale();
         });
         
-        const calcoloPrezzoTotale = () => {
-            listaBottoni = document.querySelectorAll('input.input_quantita');
+        const calcoloPrezzoTotale = (id) => {
+            listaBottoni = document.querySelectorAll('input.input-text');
             listaSpanPrezzi = document.querySelectorAll('#products > form > div.container > div > div > div > div.down-content > span');
             let totale = 0;
             for(let i = 0; i < listaBottoni.length; i++) {
@@ -200,6 +210,24 @@ if ($stmt->bind_result($idProdotto, $nomeProdotto, $prezzo, $descrizione, $immag
             bottonePrezzoTotale = document.querySelector('#costoTotale')
             bottonePrezzoTotale.textContent = totale.toFixed(2) + '€';
         }
+
+        const diminuzioneQuantita = (id) => {
+            listaBottoni = document.querySelectorAll('input.input-text');
+            if(listaBottoni[id].value >= listaBottoni[id].min + 1) {
+                listaBottoni[id].value--;
+            }
+            calcoloPrezzoTotale();
+        }
+
+        const aumentoQuantita = (id) => {
+            listaBottoni = document.querySelectorAll('input.input-text');
+            if(listaBottoni[id].value <= listaBottoni[id].max - 1) {
+                listaBottoni[id].value++;
+            }
+            calcoloPrezzoTotale();
+        }
+
+
     </script>
 
     <!-- ***** Footer Start ***** -->

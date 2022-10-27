@@ -1859,12 +1859,8 @@ Single Product Page
 
 .quantity-content {
   margin-top: 30px;
-  padding-top: 30px;
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
   width: 100%;
-  padding-bottom: 30px;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 }
 
 .quantity-content .left-content {
@@ -1952,7 +1948,9 @@ Single Product Page
 
 .quantity.buttons_added .minus:hover,
 .quantity.buttons_added .plus:hover {
-  background: #eeeeee;
+  background: #000;
+  color: whitesmoke;
+  transition: all 00.3s;
 }
 
 .quantity input::-webkit-outer-spin-button,
