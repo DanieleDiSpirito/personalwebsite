@@ -170,7 +170,7 @@ if ($stmt->bind_result($idProdotto, $nomeProdotto, $prezzo, $descrizione, $immag
                     } else {
                         echo '
                         <div>
-                            <h5>Il carrello è vuoto</h5><br>
+                            <h5 style="text-align: center">Il carrello è vuoto</h5><br>
                         </div>';
                     }
                     ?>
@@ -226,7 +226,6 @@ if ($stmt->bind_result($idProdotto, $nomeProdotto, $prezzo, $descrizione, $immag
             }
             calcoloPrezzoTotale();
         }
-
 
     </script>
 

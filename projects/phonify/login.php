@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Daniele Di Spirito | Login</title>
+	<title>Phonify | Login</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
@@ -98,6 +98,7 @@
 					<div class="wrap-input100 validate-input">
 						<input class="input100" type="password" name="password" placeholder="Password">
 						<span class="focus-input100" data-placeholder="&#xe80f;"></span>
+                        <button type="button" style="position: absolute; right: 5%; top: 3rem;" onclick="togglePassword()"><i class="bi bi-eye" style="font-size: 20px"></i></button>
 					</div>
 
 					<div class="container-login100-form-btn m-t-32">
@@ -122,6 +123,22 @@
 	
 
 	<div id="dropDownSelect1"></div>
+
+    <script>
+        const togglePassword = () => {
+            eyeIcon = document.getElementsByTagName('i')[1]
+            if(eyeIcon.classList.contains('bi-eye')) {
+                eyeIcon.classList.add('bi-eye-slash')
+                eyeIcon.classList.remove('bi-eye')
+                document.querySelector('input[name=password]').type = 'text'
+            } else {
+                eyeIcon.classList.add('bi-eye')
+                eyeIcon.classList.remove('bi-eye-slash')
+                document.querySelector('input[name=password]').type = 'password'
+            }
+        }
+
+    </script>
 
 </body>
 </html>

@@ -231,7 +231,7 @@ if(isset($account)) {
                         <li><a href="cart.php">Carrello</a></li>
                         <li><a href="orari.php">Orari</a></li>
                         <li><a href="dovesiamo.php">Dove siamo</a></li>
-                        <li><a href="../..">Crediti</a></li>
+                        <li><a href="../.." target="_blank">Crediti</a></li>
                         <li><a href="api/logout.php">Logout</a></li>
                     </ul>
                 </div>

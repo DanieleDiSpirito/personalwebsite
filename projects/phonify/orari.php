@@ -106,7 +106,7 @@ if (isset($_SESSION['session']) && (!isset($_SESSION['codice']) or $_SESSION['co
     <!-- ***** Products Area Starts ***** -->
     <main style="margin-top: 8rem; display: flex; justify-content: center; text-align: center; flex-direction: column; align-items: center">
         <h1>Orari</h1><br>
-        <table border="1" style="width: 500px">
+        <table border="1" class="tabella_on_phone">
             <thead>
                 <td><b>Giorno</b></td>
                 <td><b>Mattina</b></td>

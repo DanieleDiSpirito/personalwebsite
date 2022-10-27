@@ -2627,3 +2627,13 @@ responsive
   border: 0;
   padding: 0 !important;
 }
+
+.tabella_on_row {
+  width: 500px;
+}
+
+@media (max-width: 600px) {
+  .tabella_on_row {
+    width: 80%;;
+  }
+}
