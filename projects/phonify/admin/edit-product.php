@@ -113,90 +113,119 @@ https://templatemo.com/tm-571-hexashop
     <br><br><br>
     <!-- ***** Product Area Starts ***** -->
     <section class="section" id="product">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="left-images" style="display: flex; justify-content: center;">
-                        <?= '<img src="data:image/jpg;base64,' . base64_encode($prodotto['immagine']) . '" alt="" style="width: 25rem; height: auto;">' ?>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="right-content">
-                        <h4><?= $prodotto['nomeProdotto'] ?></h4>
-                        <span class="price"><?= $prodotto['prezzo'] ?> €</span>
-                        <br>
-                        <div class="table100">
-                            <table style="border: 2px">
-                                <tbody>
-                                    <tr>
-                                        <td class="column1"><b>Marca</b></td>
-                                        <td class="column2"><?= $prodotto['marca'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="column1"><b>RAM</b></td>
-                                        <td class="column2"><?= $prodotto['RAM'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="column1"><b>Capacità</b></td>
-                                        <td class="column2"><?= $prodotto['capacita'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="column1"><b>Colore</b></td>
-                                        <td class="column2"><?= $prodotto['colore'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="column1"><b>OS</b></td>
-                                        <td class="column2"><?= $prodotto['os'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="column1"><b>Dimensioni</b></td>
-                                        <td class="column2"><?= $prodotto['dimensioni'] ?></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+        <form method="POST" action="../api/modifica-prodotto.php">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="left-images" style="display: flex; justify-content: center;">
+                            <?= '<img src="data:image/jpg;base64,' . base64_encode($prodotto['immagine']) . '" alt="" style="width: 25rem; height: auto;">' ?>
                         </div>
-                        <br>
-                        <?php
-                            if(isset($account)) {
-                                if($prodotto['quantita'] > 0) {
-                                    $stmt = $mysqli->prepare('SELECT 1 FROM carrelli, utenti WHERE username = ? AND carrelli.idUtente = utenti.idUtente AND idProdotto = ?');
-                                    $stmt->bind_param('si', $account->username, $_GET['id']);
-                                    $stmt->execute();
-                                    if ($stmt->bind_result($nel_carrello)) {
-                                        $stmt->fetch();
-                                        $stmt->close();
-                                    }
-                                    $mysqli->close();
-    
-                                    if($nel_carrello) {
-                                        $scritta = 'Rimuovi dal carrello';
-                                    } else {
-                                        $scritta = 'Aggiungi al carrello';
-                                    }
-                                    
-                                    echo '
-                                    <div class="total" style="margin-top: 20px">
-                                        <div class="main-border-button">
-                                            <a href="api/cart.php?id='.$_GET['id'].'">
-                                            ' . $scritta . '
-                                            </a>
-                                        </div>
-                                    </div>';
-                                } else {
-                                    echo '
-                                    <div class="total" style="margin-top: 20px; text-align: center; color: darkred; font-weight: 600">
-                                        <i class="bi bi-exclamation-diamond" style="font-size: 1.2rem"></i>&nbsp;&nbsp;Non ci sono quantità disponibili
-                                    </div>';
-                                }
-                            }
-                        ?>
                     </div>
+                    <div class="col-lg-4">
+                        <div class="right-content">
+                            <h4><?= $prodotto['nomeProdotto'] ?></h4>
+                            <span class="price"><?= $prodotto['prezzo'] ?> €</span>
+                            <br>
+                            <div class="table100">
+                                <table style="border: 2px">
+                                    <tbody>
+                                        <tr>
+                                            <td class="column1"><b>Marca</b></td>
+                                            <td class="column2">
+                                                <select name="marca">
+                                                    <?php 
+                                                        foreach(['Apple', 'Samsung', 'Xiaomi', 'Huawei', 'Oppo', 'Sony', 'Google', 'Wiko'] as $marca) {
+                                                            if($prodotto['marca'] === $marca) {
+                                                                $selected = 'selected';
+                                                            } else {
+                                                                $selected = '';
+                                                            }
+                                                            echo '<option value="'.$marca.'" ' . $selected . '>'.$marca.'</option>';
+                                                        }
+                                                    ?>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="column1"><b>RAM</b></td>
+                                            <td class="column2">
+                                                <select name="RAM">
+                                                    <?php 
+                                                        foreach(['1 GB', '2 GB', '4 GB', '6 GB', '8 GB', '16 GB'] as $ram) {
+                                                            if($prodotto['RAM'] === $ram) {
+                                                                $selected = 'selected';
+                                                            } else {
+                                                                $selected = '';
+                                                            }
+                                                            echo '<option value="'.$ram.'" ' . $selected . '>'.$ram.'</option>';
+                                                        }
+                                                    ?>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="column1"><b>Capacità</b></td>
+                                            <td class="column2">
+                                                <select name="capacita">
+                                                    <?php 
+                                                        foreach(['16 GB', '32 GB', '64 GB', '128 GB', '256 GB', '512 GB', '1 TB', '2 TB'] as $capacita) {
+                                                            if($prodotto['capacita'] === $capacita) {
+                                                                $selected = 'selected';
+                                                            } else {
+                                                                $selected = '';
+                                                            }
+                                                            echo '<option value="'.$capacita.'" ' . $selected . '>'.$capacita.'</option>';
+                                                        }
+                                                    ?>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="column1"><b>Colore</b></td>
+                                            <td class="column2">
+                                                <input type="text" name="color" value="<?= $prodotto['colore']?>" style="width: 60%; height: 22px;">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="column1"><b>OS</b></td>
+                                            <td class="column2">
+                                                <select name="os">
+                                                    <?php 
+                                                        foreach(['iOS', 'iOS 7', 'iOS 8', 'iOS 9', 'iOS 10', 'iOS 11', 'iOS 12', 'iOS 13', 'iOS 14', 'iOS 15', 'iOS 16', 'Android 10', 'Android 11', 'Android 12', 'Android Oreo', 'Android Pie'] as $os) {
+                                                            if($prodotto['os'] === $os) {
+                                                                $selected = 'selected';
+                                                            } else {
+                                                                $selected = '';
+                                                            }
+                                                            echo '<option value="'.$os.'" ' . $selected . '>'.$os.'</option>';
+                                                        }
+                                                    ?>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="column1"><b>Dimensioni</b></td>
+                                            <td class="column2">
+                                                <input type="number" name="color" value="<?= str_replace(' pollici', '', str_replace(',', '.', $prodotto['dimensioni'])) ?>" step='0.1' min='0' style="width: 60%; height: 22px">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <br>
+                            <div class="total" style="margin-top: 20px">
+                                <div class="main-border-button">
+                                    <a href="api/cart.php?id=<?php echo $_GET['id']; ?>">
+                                        Salva modifiche
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <textarea name="descrizione" style="margin-top: 40px;margin-left: 30px; margin-right: 30px; width: 100%; height: 200px"><?= $prodotto['descrizione'] ?></textarea>
                 </div>
-                <span style="margin-top: 40px;margin-left: 30px;margin-right: 30px;">
-                    <?= $prodotto['descrizione'] ?>
-                </span>
             </div>
-        </div>
+        </form>
     </section>
     <!-- ***** Product Area Ends ***** -->
 
