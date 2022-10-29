@@ -88,7 +88,7 @@ https://templatemo.com/tm-571-hexashop
                         <!-- ***** Logo End ***** -->
                         <!-- ***** Menu Start ***** -->
                         <ul class="nav">
-                            <li class="scroll-to-section"><a href="#" class="active">Modifica</a></li>
+                            <li class="scroll-to-section"><a href="index.php/..">Modifica</a></li>
                             <li class="scroll-to-section"><a href="aggiungi.php">Aggiungi</a></li>
                             <li class="submenu">
                                 <a><i class="bi bi-person-circle" style="font-size: 1.5rem"></i></a>
@@ -110,15 +110,47 @@ https://templatemo.com/tm-571-hexashop
     </header>
     <!-- ***** Header Area End ***** -->
 
-    <br><br><br>
+    <br>
     <!-- ***** Product Area Starts ***** -->
     <section class="section" id="product">
         <form method="POST" action="../api/modifica-prodotto.php">
             <div class="container">
-                <div class="row">
+                <span>Clicca l'immagine per modificarla</span>
+                <div class="row" style="margin-top: 20px">
                     <div class="col-lg-8">
                         <div class="left-images" style="display: flex; justify-content: center;">
-                            <?= '<img src="data:image/jpg;base64,' . base64_encode($prodotto['immagine']) . '" alt="" style="width: 25rem; height: auto;">' ?>
+                            
+                            <?= '<img src="data:image/jpg;base64,' . base64_encode($prodotto['immagine']) . '" alt="Clicca sull\'immagine per modificarla" style="width: 25rem; height: auto;" id="image">' ?>
+                            <input type="file" id="input-file-img" style="display: none">
+
+                            <style>
+                                #image {
+                                    cursor: pointer;
+                                }
+                            </style>
+                            
+                            <script>
+                                inputFile = document.getElementById('input-file-img');
+                                image = document.getElementById('image');
+                                
+                                document.getElementById('image').addEventListener('click', () => { 
+                                    document.getElementById('input-file-img').click();
+                                });
+
+                                inputFile.addEventListener("change", function(e) {
+                                    var file = this.files[0]
+                                    reader = new FileReader();
+                                    reader.onload = function(event) {
+                                        var contents = event.target.result;
+                                        image.src = contents;
+                                    };
+                                    reader.onerror = function(event) {
+                                        console.error("File could not be read! Code " + event.target.error.code);
+                                    };
+                                    reader.readAsDataURL(file);
+                                }, false);
+                            </script>
+                        
                         </div>
                     </div>
                     <div class="col-lg-4">
@@ -183,7 +215,7 @@ https://templatemo.com/tm-571-hexashop
                                         <tr>
                                             <td class="column1"><b>Colore</b></td>
                                             <td class="column2">
-                                                <input type="text" name="color" value="<?= $prodotto['colore']?>" style="width: 60%; height: 22px;">
+                                                <input type="text" name="color" value="<?= $prodotto['colore']?>" style="width: 90%; height: 22px;">
                                             </td>
                                         </tr>
                                         <tr>
@@ -206,7 +238,7 @@ https://templatemo.com/tm-571-hexashop
                                         <tr>
                                             <td class="column1"><b>Dimensioni</b></td>
                                             <td class="column2">
-                                                <input type="number" name="color" value="<?= str_replace(' pollici', '', str_replace(',', '.', $prodotto['dimensioni'])) ?>" step='0.1' min='0' style="width: 60%; height: 22px">
+                                                <input type="number" name="color" value="<?= str_replace(' pollici', '', str_replace(',', '.', $prodotto['dimensioni'])) ?>" step='0.1' min='0' style="width: 35%; height: 22px">
                                             </td>
                                         </tr>
                                     </tbody>
@@ -215,7 +247,7 @@ https://templatemo.com/tm-571-hexashop
                             <br>
                             <div class="total" style="margin-top: 20px">
                                 <div class="main-border-button">
-                                    <a href="api/cart.php?id=<?php echo $_GET['id']; ?>">
+                                    <a href="../api/modifica-prodotto.php?id=<?php echo $_GET['id']; ?>">
                                         Salva modifiche
                                     </a>
                                 </div>
