@@ -228,6 +228,22 @@ body {
   color: #2a2a2a;
 }
 
+.main-border-button button {
+  font-size: 13px;
+  color: #2a2a2a;
+  border: 1px solid #2a2a2a;
+  background-color: #fff;
+  padding: 12px 25px;
+  display: inline-block;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.main-border-button button:hover {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
 .main-white-button a {
   font-size: 13px;
   color: #2a2a2a;

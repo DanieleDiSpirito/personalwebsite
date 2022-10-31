@@ -113,7 +113,7 @@ https://templatemo.com/tm-571-hexashop
     <br>
     <!-- ***** Product Area Starts ***** -->
     <section class="section" id="product">
-        <form method="POST" action="../api/modifica-prodotto.php">
+        <form method="POST" action="../api/modifica-prodotto.php" enctype="multipart/form-data">
             <div class="container">
                 <span>Clicca l'immagine per modificarla</span>
                 <div class="row" style="margin-top: 20px">
@@ -121,7 +121,7 @@ https://templatemo.com/tm-571-hexashop
                         <div class="left-images" style="display: flex; justify-content: center;">
                             
                             <?= '<img src="data:image/jpg;base64,' . base64_encode($prodotto['immagine']) . '" alt="Clicca sull\'immagine per modificarla" style="width: 25rem; height: auto;" id="image">' ?>
-                            <input type="file" id="input-file-img" style="display: none">
+                            <input type="file" name="immagine" id="input-file-img" style="display: none">
 
                             <style>
                                 #image {
@@ -155,8 +155,8 @@ https://templatemo.com/tm-571-hexashop
                     </div>
                     <div class="col-lg-4">
                         <div class="right-content">
-                            <h4><?= $prodotto['nomeProdotto'] ?></h4>
-                            <span class="price"><?= $prodotto['prezzo'] ?> €</span>
+                            <h4><input type="text" name="nome" value="<?= $prodotto['nomeProdotto'] ?>" style="font-weight: bold"></h4>
+                            <span class="price" style="display: flex !important"><input type="number" name="prezzo" value="<?= $prodotto['prezzo'] ?>" style="width: 30%; color: #a1a1a1; font-weight: 500;">&nbsp;€</span>
                             <br>
                             <div class="table100">
                                 <table style="border: 2px">
@@ -215,7 +215,7 @@ https://templatemo.com/tm-571-hexashop
                                         <tr>
                                             <td class="column1"><b>Colore</b></td>
                                             <td class="column2">
-                                                <input type="text" name="color" value="<?= $prodotto['colore']?>" style="width: 90%; height: 22px;">
+                                                <input type="text" name="colore" value="<?= $prodotto['colore']?>" style="width: 90%; height: 22px;">
                                             </td>
                                         </tr>
                                         <tr>
@@ -238,7 +238,7 @@ https://templatemo.com/tm-571-hexashop
                                         <tr>
                                             <td class="column1"><b>Dimensioni</b></td>
                                             <td class="column2">
-                                                <input type="number" name="color" value="<?= str_replace(' pollici', '', str_replace(',', '.', $prodotto['dimensioni'])) ?>" step='0.1' min='0' style="width: 35%; height: 22px">
+                                                <input type="number" name="dimensioni" value="<?= str_replace(' pollici', '', str_replace(',', '.', $prodotto['dimensioni'])) ?>" step='0.1' min='0' style="width: 35%; height: 22px">
                                             </td>
                                         </tr>
                                     </tbody>
@@ -247,9 +247,9 @@ https://templatemo.com/tm-571-hexashop
                             <br>
                             <div class="total" style="margin-top: 20px">
                                 <div class="main-border-button">
-                                    <a href="../api/modifica-prodotto.php?id=<?php echo $_GET['id']; ?>">
+                                    <button type="submit" name="id" value="<?= $_GET["id"] ?>">
                                         Salva modifiche
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
                         </div>
