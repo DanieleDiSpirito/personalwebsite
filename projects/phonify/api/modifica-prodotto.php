@@ -11,35 +11,37 @@
 
     include '../config.php';
 
-    $id = $_POST['id'];
-    $nome = $_POST['nome'];
-    $prezzo = floatval($_POST['prezzo']);
-    $marca = $_POST['marca'];
-    $RAM = $_POST['RAM'];
-    $capacita = $_POST['capacita'];
-    $colore = $_POST['colore'];
-    $os = $_POST['os'];
-    $dimensioni = $_POST['dimensioni'];
-    $descrizione = $_POST['descrizione'];
     if(empty($_FILES['immagine']['name'])) {
         upload(false);
     } else {
-        $immagine = addslashes(file_get_contents($_FILES['immagine']['tmp_name']));
+        $immagine = file_get_contents($_FILES['immagine']['tmp_name']);
         upload(true);
     }
 
     function upload($withimage) {
         global $mysqli;
-        if($withimage) {
-            $stmt = $mysqli->prepare('UPDATE cellulari SET nomeProdotto = ?, prezzo = ?, descrizione = ?, marca = ?, RAM = ?, capacita = ?, colore = ?, os = ?, dimensioni = ?, immagine = ? WHERE cellulari.idProdotto = ?;');
+        $id = $_POST['id'];
+        $nome = $_POST['nome'];
+        $prezzo = floatval($_POST['prezzo']);
+        $marca = $_POST['marca'];
+        $RAM = $_POST['RAM'];
+        $capacita = $_POST['capacita'];
+        $colore = $_POST['colore'];
+        $os = $_POST['os'];
+        $dimensioni = $_POST['dimensioni'];
+        $descrizione = $_POST['descrizione'];
+        if($withimage === true) {
+            global $immagine;
+            $stmt = $mysqli->prepare('UPDATE cellulari SET nomeProdotto = ?, prezzo = ?, descrizione = ?, marca = ?, RAM = ?, capacita = ?, colore = ?, os = ?, dimensioni = ?, immagine = ? WHERE idProdotto = ?;');
             $stmt->bind_param('sdssssssdbi', $nome, $prezzo, $descrizione, $marca, $RAM, $capacita, $colore, $os, $dimensioni, $immagine, $id);
-            //                                s       d          s           s      s        s        s      s        d           b       i   
+            //                                s       d          s           s      s        s        s      s        d           s        i
+            $stmt->send_long_data(9, $immagine); // 9 because it's the 9th element in sdssssssdbi (first letter has index 0)
             $stmt->execute();
             $stmt->close();
         } else {
-            $stmt = $mysqli->prepare('UPDATE cellulari SET nomeProdotto = ?, prezzo = ?, descrizione = ?, marca = ?, RAM = ?, capacita = ?, colore = ?, os = ?, dimensioni = ? WHERE cellulari.idProdotto = ?;');
+            $stmt = $mysqli->prepare('UPDATE cellulari SET nomeProdotto = ?, prezzo = ?, descrizione = ?, marca = ?, RAM = ?, capacita = ?, colore = ?, os = ?, dimensioni = ? WHERE idProdotto = ?;');
             $stmt->bind_param('sdssssssdi', $nome, $prezzo, $descrizione, $marca, $RAM, $capacita, $colore, $os, $dimensioni, $id);
-            //                                s       d          s           s      s        s        s      s        d         i   
+            //                                s       d          s           s      s        s        s      s        d        i
             $stmt->execute();
             $stmt->close();
         }

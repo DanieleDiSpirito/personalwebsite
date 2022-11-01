@@ -223,7 +223,7 @@ https://templatemo.com/tm-571-hexashop
                                             <td class="column2">
                                                 <select name="os">
                                                     <?php 
-                                                        foreach(['iOS', 'iOS 7', 'iOS 8', 'iOS 9', 'iOS 10', 'iOS 11', 'iOS 12', 'iOS 13', 'iOS 14', 'iOS 15', 'iOS 16', 'Android 10', 'Android 11', 'Android 12', 'Android Oreo', 'Android Pie'] as $os) {
+                                                        foreach(['iOS', 'iOS 7', 'iOS 8', 'iOS 9', 'iOS 10', 'iOS 11', 'iOS 12', 'iOS 13', 'iOS 14', 'iOS 15', 'iOS 16', 'Android 10', 'Android 11', 'Android 12'] as $os) {
                                                             if($prodotto['os'] === $os) {
                                                                 $selected = 'selected';
                                                             } else {
