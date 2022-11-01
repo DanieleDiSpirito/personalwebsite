@@ -13,7 +13,25 @@
 
     if(empty($_FILES['immagine']['name'])) {
         upload(false);
-    } else {
+    } else {        
+        $filepath = $_FILES['immagine']['tmp_name'];
+        $fileSize = filesize($filepath);
+        $fileinfo = finfo_open(FILEINFO_MIME_TYPE);
+        $filetype = finfo_file($fileinfo, $filepath);
+
+        if ($fileSize > 16777215) {
+            die("File troppo grande");
+        }
+
+        $allowedTypes = [
+            'image/png' => 'png',
+            'image/jpeg' => 'jpg'
+        ];
+        
+        if (!in_array($filetype, array_keys($allowedTypes))) {
+            die("Solo file immagini accettate");
+        }
+
         $immagine = file_get_contents($_FILES['immagine']['tmp_name']);
         upload(true);
     }

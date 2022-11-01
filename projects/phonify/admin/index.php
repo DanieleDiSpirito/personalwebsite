@@ -130,7 +130,7 @@ mysqli_free_result($result);
                                     <div class="hover-content">
                                         <ul>
                                             <li style="margin: 0 auto;"><a href="edit-product.php?id='.$prodotto["idProdotto"].'"><i class="bi bi-pencil"></i></a></li>
-                                            <li style="margin: 0 auto;"><a onclick="azzerraQuantita('.$i.')"><i class="bi bi-trash3"></i></a></li>
+                                            <li style="margin: 0 auto;"><a href="../api/rimuovi-prodotto.php?id='.$prodotto["idProdotto"].'"><i class="bi bi-trash3"></i></a></li>
                                         </ul>
                                     </div>
                                     <img class="img_on_phone" src="data:image/jpg;base64,' . base64_encode($prodotto["immagine"]) . '" alt="">
@@ -212,11 +212,6 @@ mysqli_free_result($result);
         const aumentoQuantita = (id) => {
             listaBottoni = document.querySelectorAll('input.input-text');
             listaBottoni[id].value++;
-        }
-
-        const azzerraQuantita = (id) => {
-            listaBottoni = document.querySelectorAll('input.input-text');
-            listaBottoni[id].value = 0;
         }
     </script>
 

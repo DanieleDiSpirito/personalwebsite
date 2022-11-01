@@ -13,17 +13,6 @@ if(!isset($account) or $account->username !== 'admin') {
 
 include '../config.php';
 
-$result = $mysqli->query('SELECT * FROM cellulari WHERE idProdotto = ' . intval($_GET['id']));
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $prodotto = $row;
-    }
-} else {
-    echo 'Nessun prodotto con quell\'ID trovato';
-    exit();
-}
-mysqli_free_result($result);
-
 ?>
 
 <html lang="en">
@@ -36,7 +25,7 @@ mysqli_free_result($result);
     <meta name="author" content="">
     <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap" rel="stylesheet">
 
-    <title>Phonify - <?= $prodotto['nomeProdotto'] ?></title>
+    <title>Phonify - Aggiungi prodotto</title>
 
 
     <!-- Additional CSS Files -->
@@ -89,7 +78,7 @@ https://templatemo.com/tm-571-hexashop
                         <!-- ***** Menu Start ***** -->
                         <ul class="nav">
                             <li class="scroll-to-section"><a href="index.php/..">Modifica</a></li>
-                            <li class="scroll-to-section"><a href="aggiungi.php">Aggiungi</a></li>
+                            <li class="scroll-to-section"><a href="#" class="active">Aggiungi</a></li>
                             <li class="submenu">
                                 <a><i class="bi bi-person-circle" style="font-size: 1.5rem"></i></a>
                                 <ul>
@@ -113,14 +102,14 @@ https://templatemo.com/tm-571-hexashop
     <br>
     <!-- ***** Product Area Starts ***** -->
     <section class="section" id="product">
-        <form method="POST" action="../api/modifica-prodotto.php" enctype="multipart/form-data">
+        <form method="POST" action="../api/aggiungi-prodotto.php" enctype="multipart/form-data">
             <div class="container">
                 <span>Clicca l'immagine per modificarla</span>
                 <div class="row" style="margin-top: 20px">
                     <div class="col-lg-8">
                         <div class="left-images" style="display: flex; justify-content: center;">
                             
-                            <?= '<img src="data:image/jpg;base64,' . base64_encode($prodotto['immagine']) . '" alt="Clicca sull\'immagine per modificarla" style="width: 25rem; height: auto;" id="image">' ?>
+                            <img src="../assets/images/immagine_aggiungi.png" alt="Clicca sull'immagine per modificarla" style="width: 25rem; height: auto;" id="image">
                             <input type="file" name="immagine" id="input-file-img" style="display: none">
 
                             <style>
@@ -155,8 +144,8 @@ https://templatemo.com/tm-571-hexashop
                     </div>
                     <div class="col-lg-4">
                         <div class="right-content">
-                            <h4><input type="text" name="nome" value="<?= $prodotto['nomeProdotto'] ?>" style="font-weight: bold"></h4>
-                            <span class="price" style="display: flex !important"><input type="number" name="prezzo" value="<?= $prodotto['prezzo'] ?>" step="0.01" style="width: 30%; color: #a1a1a1; font-weight: 500;">&nbsp;€</span>
+                            <h4><input type="text" name="nome" placeholder="Nome prodotto" value="" style="font-weight: bold"></h4>
+                            <span class="price" style="display: flex !important"><input type="number" name="prezzo" value="" placeholder="0.00" style="width: 30%; color: #a1a1a1; font-weight: 500;">&nbsp;€</span>
                             <br>
                             <div class="table100">
                                 <table style="border: 2px">
@@ -165,14 +154,10 @@ https://templatemo.com/tm-571-hexashop
                                             <td class="column1"><b>Marca</b></td>
                                             <td class="column2">
                                                 <select name="marca">
+                                                    <option selected value="error" disabled>Seleziona</option>
                                                     <?php 
                                                         foreach(['Apple', 'Samsung', 'Xiaomi', 'Huawei', 'Oppo', 'Sony', 'Google', 'Wiko'] as $marca) {
-                                                            if($prodotto['marca'] === $marca) {
-                                                                $selected = 'selected';
-                                                            } else {
-                                                                $selected = '';
-                                                            }
-                                                            echo '<option value="'.$marca.'" ' . $selected . '>'.$marca.'</option>';
+                                                            echo '<option value="'.$marca.'">'.$marca.'</option>';
                                                         }
                                                     ?>
                                                 </select>
@@ -182,14 +167,10 @@ https://templatemo.com/tm-571-hexashop
                                             <td class="column1"><b>RAM</b></td>
                                             <td class="column2">
                                                 <select name="RAM">
+                                                    <option selected value="error" disabled>Seleziona</option>
                                                     <?php 
                                                         foreach(['1 GB', '2 GB', '4 GB', '6 GB', '8 GB', '16 GB'] as $ram) {
-                                                            if($prodotto['RAM'] === $ram) {
-                                                                $selected = 'selected';
-                                                            } else {
-                                                                $selected = '';
-                                                            }
-                                                            echo '<option value="'.$ram.'" ' . $selected . '>'.$ram.'</option>';
+                                                            echo '<option value="'.$ram.'">'.$ram.'</option>';
                                                         }
                                                     ?>
                                                 </select>
@@ -199,14 +180,10 @@ https://templatemo.com/tm-571-hexashop
                                             <td class="column1"><b>Capacità</b></td>
                                             <td class="column2">
                                                 <select name="capacita">
+                                                    <option selected value="error" disabled>Seleziona</option>
                                                     <?php 
                                                         foreach(['16 GB', '32 GB', '64 GB', '128 GB', '256 GB', '512 GB', '1 TB', '2 TB'] as $capacita) {
-                                                            if($prodotto['capacita'] === $capacita) {
-                                                                $selected = 'selected';
-                                                            } else {
-                                                                $selected = '';
-                                                            }
-                                                            echo '<option value="'.$capacita.'" ' . $selected . '>'.$capacita.'</option>';
+                                                            echo '<option value="'.$capacita.'">'.$capacita.'</option>';
                                                         }
                                                     ?>
                                                 </select>
@@ -215,21 +192,17 @@ https://templatemo.com/tm-571-hexashop
                                         <tr>
                                             <td class="column1"><b>Colore</b></td>
                                             <td class="column2">
-                                                <input type="text" name="colore" value="<?= $prodotto['colore']?>" style="width: 90%; height: 22px;">
+                                                <input type="text" name="colore" placeholder="Inserisci" value="" style="width: 90%; height: 22px;">
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="column1"><b>OS</b></td>
                                             <td class="column2">
                                                 <select name="os">
+                                                    <option selected value="error" disabled>Seleziona</option>
                                                     <?php 
                                                         foreach(['iOS', 'iOS 7', 'iOS 8', 'iOS 9', 'iOS 10', 'iOS 11', 'iOS 12', 'iOS 13', 'iOS 14', 'iOS 15', 'iOS 16', 'Android 10', 'Android 11', 'Android 12'] as $os) {
-                                                            if($prodotto['os'] === $os) {
-                                                                $selected = 'selected';
-                                                            } else {
-                                                                $selected = '';
-                                                            }
-                                                            echo '<option value="'.$os.'" ' . $selected . '>'.$os.'</option>';
+                                                            echo '<option value="'.$os.'">'.$os.'</option>';
                                                         }
                                                     ?>
                                                 </select>
@@ -239,7 +212,7 @@ https://templatemo.com/tm-571-hexashop
                                             <td class="column1"><b>Dimensioni</b></td>
                                             <td class="column2">
                                                 <span style="display: flex !important; font-size: inherit !important; color: #000 !important; font-weight: inherit !important; display: inherit; margin-top: inherit !important; align-items: baseline;">
-                                                    <input type="number" name="dimensioni" value="<?= str_replace(' pollici', '', str_replace(',', '.', $prodotto['dimensioni'])) ?>" step='0.1' min='0' style="width: 35%; height: 22px">&nbsp;pollici
+                                                    <input type="number" name="dimensioni" placeholder="0" value="" step='0.1' min='0' style="width: 35%; height: 22px">&nbsp;pollici
                                                 </span>
                                             </td>
                                         </tr>
@@ -249,14 +222,14 @@ https://templatemo.com/tm-571-hexashop
                             <br>
                             <div class="total" style="margin-top: 20px">
                                 <div class="main-border-button">
-                                    <button type="submit" name="id" value="<?= $_GET["id"] ?>">
-                                        Salva modifiche
+                                    <button type="submit">
+                                        Aggiungi prodotto
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <textarea name="descrizione" style="margin-top: 40px;margin-left: 30px; margin-right: 30px; width: 100%; height: 200px"><?= $prodotto['descrizione'] ?></textarea>
+                    <textarea name="descrizione" style="margin-top: 40px;margin-left: 30px; margin-right: 30px; width: 100%; height: 200px" placeholder="Inserisci la descrizione del prodotto"></textarea>
                 </div>
             </div>
         </form>
