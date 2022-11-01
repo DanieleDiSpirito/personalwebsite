@@ -112,9 +112,11 @@
                     </div>
                     <br>
                     <p class="text-center">
-                        Clicca <a href="../phonify/register.php">qui</a> per registrarsi
+                        Clicca <a href="register.php">qui</a> per registrarsi
                     </p>
-
+                    <p class="text-center">
+                        Non ricordi la tua password? Clicca <a href="recupero-password.php">qui</a>
+                    </p>
 				</form>
 
 			</div>
