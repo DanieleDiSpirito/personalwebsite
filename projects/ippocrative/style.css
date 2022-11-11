@@ -1,0 +1,118 @@
+:root {
+    --primary: #344060;
+    --secondary: #e8e8e8;
+    --ternary: beige;
+}
+
+* {
+    background-color: var(--primary);
+    color: var(--secondary);
+    font-family:Georgia, 'Times New Roman', Times, serif;
+}
+
+nav {
+    display: flex;
+    justify-content: end;
+}
+
+a[href=".."] > i.bi {
+    font-size: 50px;
+    position: absolute;
+    top: 10px;
+    margin: 50px;
+    cursor: pointer;
+}
+
+nav > img {
+    margin-right: 20px;
+    width: 30%;
+}
+
+div#domanda { 
+    text-align: center;
+    width: 100%;
+    background-color: transparent;
+    font-size: 1.75rem;
+}
+
+div#title {
+    font-size: 30px;
+    margin-top: 5rem;
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+fieldset {
+    border: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+input[type=text] {
+    text-transform: uppercase;
+    margin-left: 2.5px;
+    margin-right: 2.5px;
+    font-size: 2rem;
+    text-align: center;
+    border: 1px solid var(--ternary);
+}
+
+input[type=text]:focus {
+    font-size: 2.25rem;
+    cursor: none;
+}
+
+div#carattere {
+    text-transform: uppercase;
+    margin-left: 2.5px;
+    margin-right: 2.5px;
+    font-size: 2rem;
+    text-align: center;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+div#submit {
+    display: flex;
+    margin: auto;
+    width: 60rem;
+    flex-direction: row-reverse;
+}
+
+button[type=submit] {
+    font-size: 1.75rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: auto;
+    margin-top: 3rem;
+    left: 100%;
+    border: 1px solid var(--ternary);
+    border-radius: 8px;
+    color: var(--secondary);
+}
+
+button[type=submit]:hover {
+    font-size: 1.85rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: auto;
+    margin-top: 3rem;
+    left: 100%;
+    border: 1px solid var(--ternary);
+    border-radius: 8px;
+    font-weight: 500;
+    color: var(--primary);
+    background-color: var(--secondary);
+    color: var(--primary);
+    cursor: pointer;
+}
+
+button[type=submit] > i {
+    background-color: inherit;
+    color: inherit;
+}

@@ -69,7 +69,7 @@
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = 'Content-type: text/html; charset=utf-8';
         $headers[] = 'From: "Daniele Di Spirito" <dispiritodaniele.noreply@gmail.com>';
-        if(mail($email, 'Codice di conferma', $message, implode("\r\n", $headers))) {
+        if(mail($email, 'Recupero password', $message, implode("\r\n", $headers))) {
             $alert = 'Mail mandata con successo!';
         } else {
             $error = 'Invio mail fallito!';
