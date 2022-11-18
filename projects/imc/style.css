@@ -14,7 +14,9 @@ body {
 
 .form .button, .form .message, .customSelect, .form .select, .form .textarea, .form .text-input, .form .option-input + label, .form .checkbox-input + label, .form .label {
   padding: 0.75em 1em;
-  appearance: none;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   outline: none;
   line-height: normal;
   border-radius: 0;
@@ -95,7 +97,10 @@ body {
   width: auto;
   color: #4E4E4E;
   position: relative;
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
   cursor: pointer;
 }
 .form .option-input:focus + label, .form .checkbox-input:focus + label, .form .option-input:active + label, .form .checkbox-input:active + label {
@@ -202,10 +207,9 @@ body {
   pointer-events: none;
   background: rgba(255, 255, 255, 0.15);
   transition: top 0.2s, left 0.2s, width 0.2s;
-  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
   transform-style: preserve-3d;
   will-change: top, left, width;
   transform-origin: 0 0;
-}
-
-/*# sourceMappingURL=style.css.map */
+}/*# sourceMappingURL=style.css.map */

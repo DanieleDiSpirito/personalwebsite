@@ -52,10 +52,23 @@ input[type=text] {
   filter: blur(5px);
   width: calc(100% + 4px);
   height: calc(100% + 4px);
-  animation: glowingbn5 20s linear infinite;
+  -webkit-animation: glowingbn5 20s linear infinite;
+          animation: glowingbn5 20s linear infinite;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
   border-radius: 10px;
+}
+
+@-webkit-keyframes glowingbn5 {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
 }
 
 @keyframes glowingbn5 {
@@ -91,6 +104,4 @@ input[type=text] {
   left: 0;
   top: 0;
   border-radius: 10px;
-}
-
-/*# sourceMappingURL=style.css.map */
+}/*# sourceMappingURL=style.css.map */
