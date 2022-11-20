@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-  <a href=".."><i class="bi bi-arrow-left-circle"></i></a>
+  <a href="home.php"><i class="bi bi-house"></i></a>
   <nav>
     <img src="assets/logo-nobg.png"></img>
   </nav>
@@ -55,9 +55,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endfor; ?>
       </fieldset>
       <div id="submit">
-        <button type="submit" name="id_domanda" value="<?= $idDomanda + 1 ?>" class="invia"><i class="bi bi-arrow-right"></i></button>
-        <?php if ($idDomanda !== 1) : ?>
-          <button type="submit" name="id_domanda" value="<?= $idDomanda - 1 ?>" class="arrow"><i class="bi bi-arrow-left"></i></button>
+        <?php if ($idDomanda !== 36) : ?>
+          <button type="submit" name="id_domanda" value="<?= $idDomanda + 1 ?>" class="invia"><i class="bi bi-arrow-right"></i></button>
+        <?php else : ?>
+          <button type="submit" name="id_domanda" value="submit" class="invia">Invia</button>
         <?php endif; ?>
       </div>
     </form>

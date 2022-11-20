@@ -2,44 +2,105 @@
 <html>
 
 <?php
-    $error = '';
-    if(isset($_POST['email']) and isset($_POST['password'])) {
-        $email = $_POST['email'];
-        $password = $_POST['password']; 
+$error = '';
+if (isset($_POST['username']) and isset($_POST['email']) and isset($_POST['password'])) {
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    controllo(serialize(array($username, $email, $password)));
 
+    if (empty($error)) {
         // database connection
         include 'config.php';
 
+        // control query username
+        $stmt = $mysqli->prepare("SELECT 1 FROM utenti_ippocrative WHERE username = ?"); // BINARY is for CASE SENSITIVE
+        $stmt->bind_param('s', $username);
+        if ($stmt->execute()) {
+            $stmt->bind_result($result);
+            $stmt->fetch();
+            if ($result === 1) {
+                $error = 'Questo username esiste già!';
+            }
+        }
+        $stmt->close();
+
+        // control query email
+        if (empty($error)) {
+            $stmt = $mysqli->prepare("SELECT 1 FROM utenti_ippocrative WHERE email = ?");
+            $stmt->bind_param('s', $email);
+            if ($stmt->execute()) {
+                $stmt->bind_result($result);
+                $stmt->fetch();
+                if ($result === 1) {
+                    $error = 'Questa email è già utilizzata!';
+                }
+            }
+            $stmt->close();
+        }
+
         // query
         $password = md5($password);
-        $stmt = $mysqli->prepare("SELECT username FROM utenti_ippocrative WHERE password=? AND email=?");
-        $stmt->bind_param('ss', $password, $email); // pass password and username as string (s)
-        $stmt->execute();
-        if ($stmt->bind_result($username)) { // there is at least one result
-            $stmt->fetch(); // insert the result in the $email variable
-            if (isset($username)) {
+        if (empty($error)) {
+            $stmt = $mysqli->prepare("INSERT INTO utenti_ippocrative(username, email, password) VALUES (?,?,?)");
+            $stmt->bind_param('sss', $username, $email, $password); // pass password and username as string (s)
+            if ($stmt->execute()) {
                 session_start();
                 $_SESSION['session'] = base64_encode(json_encode(array('username' => $username, 'email' => $email, 'password' => $password)));
                 header('Location: home.php');
             } else {
-                $error = 'Credenziali errate';
+                $error = 'Inserimento non avvenuto';
             }
         }
     }
+}
+
+function controllo($array)
+{
+    global $error;
+    $array = unserialize($array);
+    for ($i = 0; $i < count($array); $i++) {
+        if ($i == 1) {
+            continue;
+        }
+        if (strlen($array[$i]) < 7) {
+            $error = "L'username e/o la password devono avere almeno 7 caratteri";
+            return;
+        }
+    }
+    if (strlen($array[0]) >= 20) {
+        $error = "L'username può avere massimo 20 caratteri";
+        return;
+    }
+    if (strlen($array[1]) >= 100) {
+        $error = "L'email può avere massimo 100 caratteri";
+        return;
+    }
+    foreach (str_split($array[0], 1) as $char) {
+        if (!(ctype_alpha($char) or ctype_alnum($char) or $char === '_' or $char === '.')) {
+            $error = "L'username può contenere solo lettere, numeri, underscore e punto.";
+            return;
+        }
+    }
+    if (!preg_match('/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-z]+)$/i', $array[1])) {
+        $error = "L'email deve essere del tipo local-part@doma.in";
+        return;
+    }
+}
 ?>
 
 <head>
-    <title>Ippocrative | Login</title>
+    <title>Ippocrative | Sign up</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="style.css">
 
-    
+
 </head>
 
 <body>
     <a href="home.php"><i class="bi bi-house"></i></a>
-    <form method="POST" action="index.php">
-        <div class="svgContainer">
+    <form method="POST" action="register.php">
+        <div class="svgContainer" style="width: 100px !important; height: 100px !important">
             <div>
                 <svg class="mySVG" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200">
                     <defs>
@@ -131,8 +192,13 @@
         </div>
 
         <div class="inputGroup inputGroup1" style="margin-bottom: 1rem !important;">
+            <label for="username1">Username</label>
+            <input type="text" name="username" id="username" class="username" maxlength="20" placeholder="Your username" />
+            <span class="indicator"></span>
+        </div>
+        <div class="inputGroup inputGroup1" style="margin-bottom: 1rem !important;">
             <label for="email1">Email</label>
-            <input type="email" name="email" id="email" class="email" maxlength="100" placeholder="your@ema.il"/>
+            <input type="email" name="email" id="email" class="email" maxlength="100" placeholder="your@ema.il" />
             <span class="indicator"></span>
         </div>
         <div class="inputGroup inputGroup2">
@@ -144,7 +210,7 @@
         <script>
             const togglePassword = () => {
                 eyeIcon = document.getElementsByTagName('i')[0]
-                if(eyeIcon.classList.contains('bi-eye')) {
+                if (eyeIcon.classList.contains('bi-eye')) {
                     eyeIcon.classList.add('bi-eye-slash')
                     eyeIcon.classList.remove('bi-eye')
                     document.querySelector('input.password').type = 'text'
@@ -156,12 +222,12 @@
             }
         </script>
         <div class="inputGroup inputGroup3">
-            <button id="login">Accedi</button>
+            <button id="login">Registrati</button>
         </div>
-        <div style="color: darkred; text-align: center; margin-bottom: 2rem; margin-top: -.5rem;"><?=$error?></div>
+        <div style="color: darkred; text-align: center; margin-bottom: 2rem; margin-top: -.5rem;"><?= $error ?></div>
         <div style="display: flex; justify-content: space-between">
             <a href="quiz.php" style="text-decoration: none; color: #344060">Gioca senza registrarti</a>
-            <a href="register.php" style="text-decoration: none; color: #344060">Registrati</a>
+            <a href="index.php/.." style="text-decoration: none; color: #344060">Accedi</a>
         </div>
     </form>
 

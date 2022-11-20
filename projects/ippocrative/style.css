@@ -124,6 +124,7 @@ form button#login {
 }
 form button#login:hover, form button#login:active {
   background-color: #217093;
+  cursor: pointer;
 }
 form .inputGroup1 .helper {
   position: absolute;
@@ -149,6 +150,7 @@ form .inputGroup1.focusWithText .helper {
 }/*# sourceMappingURL=style.css.map */
 
 button.eye {
+  color: var(--primary);
   position: absolute;
   right: 5%;
   top: 55%;
@@ -156,4 +158,12 @@ button.eye {
   border: 0;
   font-size: 20px;
   cursor: pointer;
+}
+a[href="home.php"] > i.bi {
+  font-size: 50px;
+  position: absolute;
+  top: 10px;
+  margin: 50px;
+  cursor: pointer;
+  color: var(--secondary);
 }
