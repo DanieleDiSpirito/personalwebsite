@@ -6,7 +6,7 @@
 
 * {
     color: var(--secondary);
-    font-family:Georgia, 'Times New Roman', Times, serif;
+    font-family: 'Noto Sans KR', sans-serif;
 }
 
 html {
@@ -18,7 +18,7 @@ nav {
     justify-content: end;
 }
 
-a[href="home.php"] > i.bi {
+a[href="index.php"] > i.bi {
     font-size: 50px;
     position: absolute;
     top: 10px;
@@ -94,7 +94,16 @@ div#carattere {
     font-size: 2rem;
     text-align: center;
     width: 2.5rem;
-    height: 2.5rem;
+    height: 2.9rem;
+}
+div#carattereSAT {
+    text-transform: uppercase;
+    margin-left: 2.5px;
+    margin-right: 2.5px;
+    font-size: 2rem;
+    text-align: center;
+    width: 2.5rem;
+    height: 2.9rem;
 }
 
 div#submit {
@@ -114,7 +123,7 @@ button {
     margin-top: 3rem;
     left: 100%;
     border: 1px solid var(--ternary);
-    color: var(--secondary);
+    color: var(--primary);
     width: 7rem;
     border-radius: 5px;
     height: 3rem;
@@ -136,6 +145,7 @@ button:hover {
 
 button > i {
     background-color: inherit;
+    font-family:Georgia, 'Times New Roman', Times, serif;
     color: var(--primary);
 }
 

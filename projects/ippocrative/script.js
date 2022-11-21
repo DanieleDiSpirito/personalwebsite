@@ -7,30 +7,46 @@ document.addEventListener('DOMContentLoaded', () => { // everything is loaded
     inputList.forEach((element, index, array) => {
 
         element.addEventListener('keydown', () => {
-            before = element.value; 
+            before = element.value;
         });
 
         element.addEventListener('keyup',   (event) => {
             after = element.value;
             if(event.keyCode === 37) {
-                array[index-1].focus();
+                elementAux = element;
+                while(!(elementAux.previousElementSibling.tagName == 'INPUT' && elementAux.previousElementSibling.type == 'text')) {
+                    elementAux = elementAux.previouslementSibling;
+                }
+                elementAux.previousElementSibling.focus();
                 return;
             }
             if(event.keyCode === 39) {
-                array[index+1].focus();
+                elementAux = element;
+                while(!(elementAux.nextElementSibling.tagName == 'INPUT' && elementAux.nextElementSibling.type == 'text')) {
+                    elementAux = elementAux.nextElementSibling;
+                }
+                elementAux.nextElementSibling.focus();
                 return;
             }
-            if(after.length == 1 && before.length == 0) {
+            if(event.keyCode === 8) {
                 try {
-                    array[index+1].focus();
+                    elementAux = element;
+                    while(!(elementAux.previousElementSibling.tagName == 'INPUT' && elementAux.previousElementSibling.type == 'text')) {
+                        elementAux = elementAux.previousElementSibling;
+                    }
+                    elementAux.previousElementSibling.focus();
                     return;
                 } catch(TypeError) {
                     return;
                 }
             }
-            if(event.keyCode === 8) {
+            if(after.length == 1 && before.length == 0) {
                 try {
-                    array[index-1].focus();
+                    elementAux = element;
+                    while(!(elementAux.nextElementSibling.tagName == 'INPUT' && elementAux.nextElementSibling.type == 'text')) {
+                        elementAux = elementAux.nextElementSibling;
+                    }
+                    elementAux.nextElementSibling.focus();
                     return;
                 } catch(TypeError) {
                     return;
@@ -40,8 +56,12 @@ document.addEventListener('DOMContentLoaded', () => { // everything is loaded
                 ((event.keyCode >= 65 && event.keyCode <= 90) || (event.keyCode >= 97 && event.keyCode <= 122) || (event.keyCode >= 48 && event.keyCode <= 57))
                 ) {
                 try {
-                    array[index+1].value =  String.fromCharCode(event.keyCode);
-                    array[index+1].focus();
+                    elementAux = element;
+                    while(!(elementAux.nextElementSibling.tagName == 'INPUT' && elementAux.nextElementSibling.type == 'text')) {
+                        elementAux = elementAux.nextElementSibling;
+                    }
+                    elementAux.nextElementSibling.value = String.fromCharCode(event.keyCode);
+                    elementAux.nextElementSibling.focus();
                     return;
                 } catch(TypeError) {
                     return;

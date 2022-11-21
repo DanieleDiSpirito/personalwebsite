@@ -8,7 +8,7 @@
         <div style="text-align: center; font-size: 20px;">Reindirizzamento tra <span id="secondi">3</span></div>
         <script>
         setInterval(() => {
-            document.location.href = "home.php";
+            document.location.href = "index.php";
         }, 3000);
         setInterval(() => {
             document.querySelector("span#secondi").innerHTML = document.querySelector("span#secondi").innerHTML - 1;
@@ -53,9 +53,9 @@
         span {
             color: white;
             position: absolute;
-            left: 50%;
             top: 90%;
-            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 98%;
             font-size: 50px;
             background-color: transparent;
         }
