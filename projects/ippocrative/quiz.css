@@ -5,9 +5,12 @@
 }
 
 * {
-    background-color: var(--primary);
     color: var(--secondary);
     font-family:Georgia, 'Times New Roman', Times, serif;
+}
+
+html {
+    background: -webkit-linear-gradient(left, #3b4767, #344575, #172f6f);
 }
 
 nav {
@@ -51,11 +54,12 @@ progress {
 }
 
 progess::-webkit-progress-bar {
+    background: none;
     background-color: white;
 }
 
 progress::-webkit-progress-value {
-    background-color: greenyellow;
+    background: -webkit-linear-gradient(left, greenyellow, greenyellow, greenyellow);
 }
 
 
@@ -75,6 +79,7 @@ input[type=text] {
     font-size: 2rem;
     text-align: center;
     border: 1px solid var(--ternary);
+    color: var(--primary);
 }
 
 input[type=text]:focus {
@@ -99,7 +104,7 @@ div#submit {
     flex-direction: row-reverse;
 }
 
-button[type=submit] {
+button {
     font-size: 1.75rem;
     display: flex;
     justify-content: center;
@@ -109,31 +114,43 @@ button[type=submit] {
     margin-top: 3rem;
     left: 100%;
     border: 1px solid var(--ternary);
-    border-radius: 8px;
     color: var(--secondary);
+    width: 7rem;
+    border-radius: 5px;
+    height: 3rem;
 }
 
-button[type=submit]:hover {
+button#row {
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+}
+
+button:hover {
     font-size: 1.85rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    margin: auto;
-    margin-top: 3rem;
-    left: 100%;
-    border: 1px solid var(--ternary);
-    border-radius: 8px;
     font-weight: 500;
-    color: var(--primary);
     background-color: var(--secondary);
     color: var(--primary);
     cursor: pointer;
 }
 
-button[type=submit] > i {
+button > i {
     background-color: inherit;
-    color: inherit;
+    color: var(--primary);
+}
+
+span#punteggio {
+    position: relative;
+    left: 33%;
+    top: 63px;
+}
+
+div#error {
+    margin-top: 10px;
+    font-size: 20px;
+    font-style: italic;
+    color: red;
+    text-align: center;
 }
 
 /* HOME */
@@ -149,14 +166,18 @@ div.home {
     border: 0;
     color: var(--primary);
     background-color: var(--secondary);
-    width: 18rem;
-    height: 5rem;
     position: absolute;
     right: 0;
     top: 0;
     margin: 50px;
     text-align: center;
     font-size: 20px;
+    border-radius: 5px;
+}
+
+table#info_table > tbody > tr > td {
+    border: 10px solid transparent;
+    color: var(--primary);
 }
 
 button.home {
@@ -167,4 +188,6 @@ button.home {
     width: 20rem;
     height: 5rem;
     cursor: pointer;
+    /*border-radius: 0;*/
+    margin-top: 1.5rem;
 }
