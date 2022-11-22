@@ -19,14 +19,15 @@ if(isset($_SESSION['session'])) {
     $_SESSION['aiuti'] = 10;
     $_SESSION['idx_aiuti'] = array();
   }
+  if(!isset($_SESSION['domanda'])) $_SESSION['domanda'] = 1;
+  $idDomanda = $_SESSION['domanda'];
 }
-
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   if(!isset($idDomanda)) $idDomanda = 1;
-  $_SESSION['domanda'] = $idDomanda;
 }
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if(!isset($_SESSION['domanda']) or $_SESSION['domanda'] != intval($_POST['id_domanda'] - 1)) {
     die('Non barare!');
@@ -57,7 +58,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   
   if($rispostaRaw !== $rispostaData) {
     $error = 'Risposta sbagliata!';
-    $riscrivi = true;
     $_SESSION['domanda']--;
   } else {
     // svuota tabella aiuti dell'utente (svuota la session con gli aiuti per gli anonymous)
@@ -138,7 +138,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div id="title"><?= $domanda ?></div>
     <form method="POST" action="quiz.php">
       <fieldset class="container">  
-        <?php if(isset($riscrivi) and $riscrivi === true) : ?>
           <?php
             if(isset($_SESSION['session'])) {
               $stmt = $mysqli->prepare('SELECT indice FROM aiuti WHERE mail_utente=?');
@@ -164,15 +163,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <div id="carattereSAT"><?=$risposta[$i]?></div>
             <?php endif; ?>
           <?php endfor; ?>
-        <?php else : ?>
-          <?php for($i = 0; $i < strlen($risposta); $i++) : ?>
-            <?php if(preg_match('/[A-Z0-9a-z]/', $risposta[$i])) : ?>
-              <input type="text" name="res[]" maxlength="1" size="1" />
-            <?php else : ?>
-              <div id="carattereSAT"><?=$risposta[$i]?></div>
-            <?php endif; ?>
-          <?php endfor; ?>
-        <?php endif; ?>
       </fieldset>
       <div id="error"><?=$error?></div>
       <div id="submit">
