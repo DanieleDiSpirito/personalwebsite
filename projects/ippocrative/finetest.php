@@ -20,7 +20,7 @@
     if(isset($_SESSION['session'])) {
         $account = json_decode(base64_decode($_SESSION['session']));
         include 'config.php';
-        $stmt = $mysqli->prepare('UPDATE utenti_ippocrative SET idDomanda = NULL WHERE utenti_ippocrative.email = ?;');
+        $stmt = $mysqli->prepare('UPDATE utenti_ippocrative SET idDomanda = NULL, nAiuti = 10 WHERE utenti_ippocrative.email = ?;');
         $stmt->bind_param('s', $account->email);
         $stmt->execute();
     }
