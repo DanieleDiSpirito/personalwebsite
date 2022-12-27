@@ -1,0 +1,150 @@
+html {
+    display: grid;    
+    text-align: center;
+    width: 750px;
+    margin: auto;
+    font-size: 50px;
+}
+
+@font-face {
+    font-family: 'Rubik Vinyl';
+    src: url('font/RubikVinyl-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'Unbounded';
+    src: url('font/Unbounded-VariableFont_wght.ttf');
+    font-weight: 400;
+}
+
+div#title {
+    font-family: 'Rubik Vinyl';
+    height: 18%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button[type="button"][value="0"] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    color: aliceblue;
+    margin: auto;
+    transform: translateY(-100%);
+    border-radius: 10%;
+}
+
+button[value="1"] {
+    width: 190px;
+    height: 190px;
+    cursor: pointer;
+    background-color: black;
+    color: white;
+    margin-bottom: 10px;
+    font-family: 'Unbounded';
+}
+
+button[value="3"] {
+    width: 190px;
+    height: 190px;
+    cursor: pointer;
+    background-color: black;
+    color: white;
+    margin-bottom: 10px;
+    font-family: 'Unbounded';
+}
+
+button[value="5"] {
+    width: 190px;
+    height: 190px;
+    cursor: pointer;
+    background-color: black;
+    color: white;
+    margin-bottom: 10px;
+    font-family: 'Unbounded';
+}
+
+/* smussamento vertici */
+
+button[name="0"] {
+    border-top-left-radius: 20px;
+}
+
+button[name="2"] {
+    border-top-right-radius: 20px;
+}
+
+button[name="6"] {
+    border-bottom-left-radius: 20px;
+}
+
+button[name="8"] {
+    border-bottom-right-radius: 20px;
+}
+
+/*
+@media (max-width: 600px) {
+    * {
+        transform: scale(70%);
+    }
+}*/
+
+body#index {
+    margin-top: 4.5rem;
+}
+
+body#index > div {
+    margin-bottom: 2rem;
+    font-family: 'Unbounded';
+}
+
+body#index > main {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+form > button[type="submit"] {
+    width: 5rem;
+    height: 2rem;
+    color: white;
+    font-family: 'Unbounded';
+    font-size: 40px;
+    margin: auto;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+button[name="001"] {
+    background-color: blue;
+}
+
+button[name="001"]:hover {
+    filter: brightness(1.5);
+    filter: sepia();
+}
+
+button[name="002"]:hover {
+    filter: brightness(1.5);
+    filter: sepia();
+}
+
+button[name="002"] {
+    background-color: brown;
+}
+
+a > i {
+    font-size: 1rem;
+    color: black;
+    position: absolute;
+    top: 10%;
+    left: 10%;
+}

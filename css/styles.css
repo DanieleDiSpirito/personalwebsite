@@ -11398,3 +11398,12 @@ html {
   margin-top: 4%;
   right: 0 !important;
 }
+
+.immagineprofilo {
+  margin-bottom: 0 !important;
+  border-radius: 0 !important;
+}
+
+.header {
+  padding-bottom: 0 !important;
+}
