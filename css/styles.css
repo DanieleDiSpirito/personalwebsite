@@ -10,6 +10,12 @@
  * Copyright 2011-2021 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+
+@font-face {
+  font-family: 'Cascadia';
+  src: url('../fonts/Caskaydia_Cove_Nerd_Font_Complete_Mono.ttf');
+}
+
 :root {
   --bs-blue: #0d6efd;
   --bs-indigo: #6610f2;
@@ -54,10 +60,10 @@
   --bs-body-color-rgb: 33, 37, 41;
   --bs-body-bg-rgb: 255, 255, 255;
   --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  /*--bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;*/
   --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
   --bs-body-font-family: var(--bs-font-sans-serif);
-  --bs-body-font-size: 1rem;
+  --bs-body-font-size: 0.9rem;
   --bs-body-font-weight: 400;
   --bs-body-line-height: 1.5;
   --bs-body-color: #212529;
@@ -78,7 +84,8 @@
 
 body {
   margin: 0;
-  font-family: var(--bs-body-font-family);
+  /*font-family: var(--bs-body-font-family);*/
+  font-family: 'Cascadia';
   font-size: var(--bs-body-font-size);
   font-weight: var(--bs-body-font-weight);
   line-height: var(--bs-body-line-height);
@@ -236,15 +243,33 @@ sup {
 
 a {
   color: #0d6efd;
-  text-decoration: underline;
+  text-decoration: none;
+  transition: color 0.5s linear;
 }
+
 a:hover {
-  color: #0a58ca;
+  color: #8eb2e8;
 }
 
 a:not([href]):not([class]), a:not([href]):not([class]):hover {
   color: inherit;
   text-decoration: none;
+}
+
+i:is([class="bi bi-twitter"], [class="bi bi-instagram"], [class="bi bi-facebook"]) {
+  transition: color 300ms linear;
+}
+
+i[class="bi bi-twitter"]:hover {
+  color: #3f9cde;
+}
+
+i[class="bi bi-instagram"]:hover {
+  color: rgb(216, 112, 216);
+}
+
+i[class="bi bi-facebook"]:hover {
+  color: blue;
 }
 
 pre,
@@ -4544,6 +4569,7 @@ textarea.form-control-lg {
 .card-body {
   flex: 1 1 auto;
   padding: 1rem 1rem;
+  background-color: #222222;
 }
 
 .card-title {
@@ -11361,14 +11387,6 @@ html {
   }
 }
 
-.bn5:active {
-  color: #000;
-}
-
-.bn5:active:after {
-  background: transparent;
-}
-
 .bn5:hover:before {
   opacity: 1;
 }
@@ -11406,4 +11424,8 @@ html {
 
 .header {
   padding-bottom: 0 !important;
+}
+
+p.subtitle {
+  max-width: 22rem;
 }

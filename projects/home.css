@@ -10,6 +10,12 @@
  * Copyright 2011-2021 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+
+@font-face {
+  font-family: 'Cascadia';
+  src: url('../fonts/Caskaydia_Cove_Nerd_Font_Complete_Mono.ttf');
+}
+
 :root {
   --bs-blue: #0d6efd;
   --bs-indigo: #6610f2;
@@ -78,7 +84,8 @@
 
 body {
   margin: 0;
-  font-family: var(--bs-body-font-family);
+  /*font-family: var(--bs-body-font-family);*/
+  font-family: 'Cascadia';
   font-size: var(--bs-body-font-size);
   font-weight: var(--bs-body-font-weight);
   line-height: var(--bs-body-line-height);
@@ -7379,6 +7386,10 @@ textarea.form-control-lg {
   margin-bottom: 3rem !important;
 }
 
+.mb-6 {
+  margin-bottom: 3.5rem !important;
+}
+
 .mb-auto {
   margin-bottom: auto !important;
 }
@@ -12248,13 +12259,25 @@ textarea.form-control-lg {
 }
 
 #progetto6 {
-  background: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.4) ), url("images/tictactoe.jpg");
+  background: linear-gradient( rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.0) ), url("images/tictactoe.jpg");
   background-size: cover;
   background-position: center;
 }
 
 #progetto6:hover {
-  background: linear-gradient( rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.5) ), url("images/tictactoe.jpg");
+  background: linear-gradient( rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.3) ), url("images/tictactoe.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+#progetto7 {
+  background: linear-gradient( rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) ), url("images/saper_sapere.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+#progetto7:hover {
+  background: linear-gradient( rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3) ), url("images/saper_sapere.jpg");
   background-size: cover;
   background-position: center;
 }

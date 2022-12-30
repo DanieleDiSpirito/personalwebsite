@@ -2,7 +2,6 @@
 <html>
 
 <?php
-    session_start();
     $error = '';
     if(isset($_POST['email']) and isset($_POST['password'])) {
         $email = $_POST['email'];
@@ -19,6 +18,7 @@
         if ($stmt->bind_result($username)) { // there is at least one result
             $stmt->fetch(); // insert the result in the $email variable
             if (isset($username)) {
+                session_start();
                 $_SESSION['session'] = base64_encode(json_encode(array('username' => $username, 'email' => $email, 'password' => $password)));
                 header('Location: index.php');
             } else {
@@ -36,7 +36,7 @@
 </head>
 
 <body>
-    <a href="index.php"><i class="bi bi-house"></i></a>
+    <a href="../index.php/.."><i class="bi bi-arrow-left"></i></a>
     <form method="POST" action="login.php">
         <div class="svgContainer">
             <div>

@@ -167,3 +167,11 @@ a[href="index.php"] > i.bi {
   cursor: pointer;
   color: var(--secondary);
 }
+a[href="../index.php/.."] > i.bi {
+  font-size: 50px;
+  position: absolute;
+  top: 10px;
+  margin: 50px;
+  cursor: pointer;
+  color: var(--secondary);
+}

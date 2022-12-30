@@ -1,3 +1,3 @@
-const changePage = (pageName) => {
-    location.href = `${pageName}`
+const changePage = (pageName, method = 'self') => {
+    window.open(`${pageName}`, `_${method}`);
 }
