@@ -127,6 +127,7 @@ h1, .h01 {
 h2, .h02 {
 	font-size: 2.4rem;
 	line-height: 1.25;
+	margin-top: 25px;
 }
 h3, .h03 {
 	font-size: 2rem;
@@ -2705,7 +2706,7 @@ footer ul li {
 	list-style: none;
 	margin-left: 0;
 	margin-bottom: 5.4rem;
-	color: #999999;
+	color: #555;
 }
 .blog-single .entry-meta a,
 .blog-single .entry-meta a:visited {
@@ -2718,7 +2719,7 @@ footer ul li {
 }
 
 .blog-single .entry-meta .date {
-	margin-right: 1rem;
+	margin-right: 0.5rem;
 }
 
 .blog-single .entry-meta .cat a {
@@ -2730,7 +2731,7 @@ footer ul li {
 }
 
 .blog-single .entry-meta .cat a::after {
-	content: ",";
+	content: "";
 }
 
 .blog-single .entry-meta .cat a:last-child::after {
@@ -2754,7 +2755,7 @@ footer ul li {
 }
 
 .blog-single .author-profile {
-	margin-top: 9rem;
+	margin-top: 4rem;
 	padding-left: 9rem;
 	position: relative;
 }

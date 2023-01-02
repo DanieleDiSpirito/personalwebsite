@@ -7,7 +7,7 @@
    <!--- basic page needs
    ================================================== -->
    <meta charset="utf-8">
-	<title>Saper sapere</title>
+	<title>Home | Saper sapere</title>
 	<meta name="description" content="">  
 	<meta name="author" content="">
 
@@ -51,11 +51,12 @@
 	}
 
 	$articoli = array();
-	$stmt = $mysqli->prepare('SELECT codCategoria, categorie.nome, contenuto, documento, visualizzazioni, scrittore, dataPubblicazione FROM `articoli` JOIN categorie USING (codCategoria) ORDER BY dataPubblicazione DESC;');
+	$stmt = $mysqli->prepare('SELECT idArticolo, codCategoria, categorie.nome, contenuto, documento, visualizzazioni, scrittori.nome, dataPubblicazione FROM `articoli` JOIN categorie USING (codCategoria) JOIN scrittori USING (idScrittore) ORDER BY dataPubblicazione DESC;');
 	$stmt->execute();
-	if ($stmt->bind_result($codCategoria, $nomeCategoria, $contenuto, $documento, $visualizzazioni, $scrittore, $dataPubblicazione)) {
+	if ($stmt->bind_result($idArticolo, $codCategoria, $nomeCategoria, $contenuto, $documento, $visualizzazioni, $scrittore, $dataPubblicazione)) {
 		while($stmt->fetch()) {
 			$articoli[] = array(
+				'idArticolo' => $idArticolo,
 				'codCategoria' => $codCategoria,
 				'nomeCategoria' => $nomeCategoria,
 				'contenuto' => $contenuto,
@@ -68,21 +69,7 @@
 		$stmt->close();
 	}
 
-	function getTitle(array $articolo) {
-		$testo = $articolo['contenuto'];
-		if (preg_match('/&t\{(.+)\}/', $testo, $match)) {
-			return $match[1];
-		}
-		return 'Nessun titolo';
-	}
-	
-	function getSummary(array $articolo) {
-		$testo = $articolo['contenuto'];
-		if (preg_match('/&s\{(.+)\}/', $testo, $match)) {
-			return $match[1];
-		}
-		return 'Riassunto non disponibile';
-	}
+	include 'fromSSFtoHTML.php';
 	
 ?>
 
@@ -98,7 +85,7 @@
    	<div class="row header-content">
 
    		<div class="logo">
-	         <a href="index.php">Author</a>
+	         <a href="index.php">Daniele Di Spirito</a>
 	    </div>
 
 	   	<nav id="main-nav-wrap">
@@ -155,11 +142,11 @@
 											<ul class="entry-meta">
 													<li style="color: white"><?=$articoli[$i]['dataPubblicazione']?></li> |
 													<li style="color: white"><?=$articoli[$i]['scrittore']?></li> |
-													<li style="color: white"><?=$articoli[$i]['nomeCategoria']?></li> |
+													<li><a href="categorie.php?nome=<?=strtolower($articoli[$i]['nomeCategoria'])?>" style="color: white"><?=$articoli[$i]['nomeCategoria']?></a></li> |
 													<li style="color: white"><?=$articoli[$i]['visualizzazioni']?> <i class="bi bi-eye-fill"></i></li>
 												</ul>	
 
-											<h1 class="slide-title"><a href="single-standard.html" title=""><?= getTitle($articoli[$i]) ?></a></h1> 
+											<h1 class="slide-title"><a href="articolo.php?id=<?=$articoli[$i]['idArticolo']?>" title=""><?= getTitle($articoli[$i]) ?></a></h1> 
 										</div> 				   					  
 								
 									</div>
@@ -177,7 +164,7 @@
 				<article class="brick entry format-standard animate-this">
 
 				<div class="entry-thumb">
-					<a href="single-standard.html" class="thumb-link">
+					<a href="articolo.php?id=<?=$articoli[$i]['idArticolo']?>" class="thumb-link">
 						<img src="data:image/png;base64,<?=base64_encode($articoli[$i]['documento'])?>" alt="building">             
 					</a>
 				</div>
@@ -194,7 +181,7 @@
 							</span>
 						</div>
 
-						<h1 class="entry-title"><a href="single-standard.html"><?=getTitle($articoli[$i])?></a></h1>
+						<h1 class="entry-title"><a href="articolo.php?id=<?=$articoli[$i]['idArticolo']?>"><?=getTitle($articoli[$i])?></a></h1>
 						
 					</div>
 						<div class="entry-excerpt"><?=getSummary($articoli[$i])?></div>
@@ -226,8 +213,9 @@
 	      </nav>
 
    	</div>
+	-->
 
-   </section> <!- end bricks -->
+   </section>
 
    
    <!-- footer
@@ -239,8 +227,8 @@
 
       		<div class="col-twelve">
 	      		<div class="copyright">
-		         	<span>© Copyright Abstract 2016</span> 
-		         	<span>Design by <a href="http://www.styleshout.com/">styleshout</a></span>		         	
+				  	<span>© Copyright <b>Saper sapere</b> 2023</span>
+		         	<span>Sviluppato da <a href="../../">Daniele Di Spirito</a></span>   	
 		         </div>
 
 		         <div id="go-top">
