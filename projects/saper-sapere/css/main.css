@@ -563,7 +563,7 @@ select {
 	border: 0;
 	outline: none;
 	vertical-align: middle;
-	color: rgba(0, 0, 0, 0.7);
+	color: #777;
 	font-family: "roboto-regular", sans-serif;
 	font-size: 1.5rem;
 	line-height: 3rem;
@@ -576,6 +576,31 @@ select {
 	-ms-transition: all 0.3s ease-in-out;
 	transition: all 0.3s ease-in-out;
 }
+
+input[type="email"]::placeholder,
+input[type="number"]::placeholder,
+input[type="search"]::placeholder,
+input[type="text"]::placeholder,
+input[type="tel"]::placeholder,
+input[type="url"]::placeholder,
+input[type="password"]::placeholder,
+textarea::placeholder,
+select::placeholder {
+	color: #777777;
+}
+
+input[type="email"]:focus::placeholder,
+input[type="number"]:focus::placeholder,
+input[type="search"]:focus::placeholder,
+input[type="text"]:focus::placeholder,
+input[type="tel"]:focus::placeholder,
+input[type="url"]:focus::placeholder,
+input[type="password"]:focus::placeholder,
+textarea:focus::placeholder,
+select:focus::placeholder {
+	color: #eee;
+}
+
 
 .ss-custom-select {
 	position: relative;
@@ -639,7 +664,7 @@ input[type="url"]:focus,
 input[type="password"]:focus,
 textarea:focus,
 select:focus {
-	background: #151515;
+	background: #7e7e7e;
 	color: white;
 }
 
@@ -3288,4 +3313,44 @@ footer ul li {
  * ----------------------------------------------- */
 #cForm {
 	margin-top: 3.6rem;
+}
+
+@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+
+.rating { 
+	border: none;
+}
+
+.rating > input { display: none; } 
+.rating > label:before { 
+	margin: 5px;
+	font-size: 1.25em;
+	font-family: FontAwesome;
+	display: inline-block;
+	content: "\f005";
+}
+
+.rating > .half:before { 
+	content: "\f089";
+	position: absolute;
+}
+
+.rating > label { 
+	color: #888; 
+	float: right; 
+}
+
+/***** CSS Magic to Highlight Stars on Hover *****/
+
+.rating > input:checked ~ label, /* show gold star when clicked */
+.rating:not(:checked) > label:hover, /* hover current star */
+.rating:not(:checked) > label:hover ~ label { color: #FFD700;  } /* hover previous stars in list */
+
+.rating > input:checked + label:hover, /* hover current star when changing rating */
+.rating > input:checked ~ label:hover,
+.rating > label:hover ~ input:checked ~ label, /* lighten current selection */
+.rating > input:checked ~ label:hover ~ label { color: #FFED85;  }
+
+input#cEmail::placeholder {
+	text-transform: capitalize;
 }
