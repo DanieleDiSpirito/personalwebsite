@@ -1,9 +1,5 @@
 <?php
 
-function starts_with($haystack, $needle) {
-    return substr($haystack, 0, strlen($needle)) === $needle;
-}
-
 function getTitle(array $articolo) {
     $testo = $articolo['contenuto'];
     if (preg_match('/&t\{(.+)\}/', $testo, $match)) {

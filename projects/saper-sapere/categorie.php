@@ -151,10 +151,23 @@
 
 				<article class="brick entry format-standard animate-this">
 
+				<?php 
+					$finfo = finfo_open(FILEINFO_MIME_TYPE); // Apre il gestore
+					$mime_type = finfo_file($finfo, "documents/".$articolo['documento']); // Restituisce il MIME type
+					finfo_close($finfo); // Chiude il gestore
+				?>
+
 				<div class="entry-thumb">
-					<a href="articolo.php?id=<?=$articolo['idArticolo']?>" class="thumb-link">
-						<img src="data:image/png;base64,<?=base64_encode($articolo['documento'])?>" alt="building">             
-					</a>
+					<?php if(str_starts_with($mime_type, 'image')): ?>	
+						<a href="articolo.php?id=<?=$articolo['idArticolo']?>" class="thumb-link">
+							<img src="documents/<?=$articolo['documento']?>" alt="building">
+						</a>
+					<?php elseif(str_starts_with($mime_type, 'video')): ?>
+						<video width="320" height="240" controls>
+							<source src="documents/<?= $articolo['documento'] ?>" type="video/mp4">
+							Il tuo browser non supporta i video in formato MP4.
+						</video>
+					<?php endif; ?>
 				</div>
 
 				<div class="entry-text">

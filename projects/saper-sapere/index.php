@@ -129,12 +129,25 @@
          			<div id="featured-post-slider" class="flexslider">
 			   			<ul class="slides">
 
-							<?php for($i = 0; $i < 3 and isset($articoli[$i]); $i++): ?>
+							<?php $limit = 3; $videos = array(); ?>
+							<?php for($i = 0; $i < $limit and isset($articoli[$i]); $i++): ?>
+
+								<?php 
+									$finfo = finfo_open(FILEINFO_MIME_TYPE); // Apre il gestore
+									$mime_type = finfo_file($finfo, "documents/".$articoli[$i]['documento']); // Restituisce il MIME type
+									finfo_close($finfo); // Chiude il gestore
+								
+									if(str_starts_with($mime_type, 'video')) {
+										$videos[] = $i;
+										$limit++;
+										continue;
+									}
+								?>
 
 								<li>
 									<div class="featured-post-slide">
 
-										<div class="post-background" style="background-image: url('data:image/png;base64,<?= base64_encode($articoli[$i]['documento']) ?>');"></div>
+										<div class="post-background" style="background-image: url('./documents/<?=$articoli[$i]['documento']?>');"></div>
 
 										<div class="overlay"></div>
 
@@ -159,14 +172,61 @@
          		</div> <!-- end entry content -->         		
          	</div>
 
-			<?php for($i = 3; isset($articoli[$i]); $i++): ?>
+			<?php foreach($videos as $video): ?>
 
 				<article class="brick entry format-standard animate-this">
 
 				<div class="entry-thumb">
-					<a href="articolo.php?id=<?=$articoli[$i]['idArticolo']?>" class="thumb-link">
-						<img src="data:image/png;base64,<?=base64_encode($articoli[$i]['documento'])?>" alt="building">             
-					</a>
+					<video width="320" height="240" controls>
+						<source src="documents/<?= $articoli[$video]['documento'] ?>" type="video/mp4">
+						Il tuo browser non supporta i video in formato MP4.
+					</video>
+				</div>
+
+				<div class="entry-text">
+					<div class="entry-header">
+
+						<div class="entry-meta">
+							<span class="cat-links" style="font-size: 15px">
+								<?=$articoli[$video]['dataPubblicazione']?> |
+								<?=$articoli[$video]['scrittore']?> |
+								<a href="categorie.php?nome=<?=strtolower($articoli[$video]['nomeCategoria'])?>"><?=$articoli[$video]['nomeCategoria']?></a> |
+								<?=$articoli[$video]['visualizzazioni']?> <i class="bi bi-eye-fill" style="color: grey"></i>
+							</span>
+						</div>
+
+						<h1 class="entry-title"><a href="articolo.php?id=<?=$articoli[$video]['idArticolo']?>"><?=getTitle($articoli[$video])?></a></h1>
+						
+					</div>
+						<div class="entry-excerpt"><?=getSummary($articoli[$video])?></div>
+				</div>
+
+				</article> <!-- end article -->
+
+			<?php endforeach; ?>
+
+
+			<?php for($i = $limit; isset($articoli[$i]); $i++): ?>
+
+				<article class="brick entry format-standard animate-this">
+
+				<?php 
+					$finfo = finfo_open(FILEINFO_MIME_TYPE); // Apre il gestore
+					$mime_type = finfo_file($finfo, "documents/".$articoli[$i]['documento']); // Restituisce il MIME type
+					finfo_close($finfo); // Chiude il gestore
+				?>
+
+				<div class="entry-thumb">
+					<?php if(str_starts_with($mime_type, 'image')): ?>	
+						<a href="articolo.php?id=<?=$articoli[$i]['idArticolo']?>" class="thumb-link">
+							<img src="documents/<?=$articoli[$i]['documento']?>" alt="building">
+						</a>
+					<?php elseif(str_starts_with($mime_type, 'video')): ?>
+						<video width="320" height="240" controls>
+							<source src="documents/<?= $articoli[$i]['documento'] ?>" type="video/mp4">
+							Il tuo browser non supporta i video in formato MP4.
+						</video>
+					<?php endif; ?>
 				</div>
 
 				<div class="entry-text">
