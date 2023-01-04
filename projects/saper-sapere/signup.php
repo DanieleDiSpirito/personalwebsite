@@ -23,44 +23,45 @@ include 'fromSSFtoHTML.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if(!(isset($_POST['email'], $_POST['password']) and $_POST['email'] != '' and $_POST['password'] != '')) {
+    if(!(isset($_POST['email'], $_POST['password'], $_POST['name'], $_POST['confermaPassword']) and $_POST['email'] != '' and $_POST['password'] != '' and $_POST['name'])) {
         $errore = 'Riempi tutti i campi!';
+    }
+
+    if(!isset($errore) and $_POST['password'] !== $_POST['confermaPassword']) {
+        $errore = 'Le password non coincidono!';
     }
 
     if(!(isset($errore))) {
         $email = strtolower($_POST['email']);
         $password = hash('sha256', $_POST['password']);
-        
-        $stmt = $mysqli->prepare('SELECT 1 FROM utenti_ss WHERE email = ? AND password = ?;');
-        $stmt->bind_param('ss', $email, $password);
-        $stmt->execute();
-        $stmt->bind_result($accountExists);
-        $stmt->fetch();
+        $name = $_POST['name'];
+        $role = 0; // standard user
 
-        if($accountExists !== 1) {
-            $errore = 'Le credenziali non sono corrette!';
+        $stmt = $mysqli->prepare('SELECT email FROM utenti_ss');
+        $stmt->execute();
+        $stmt->bind_result($usedEmail);
+        $usedEmails = array();
+        while($stmt->fetch()) {
+            $usedEmails[] = $usedEmail;
         }
 
-        $stmt->close();
+        if(in_array($email, $usedEmails)) {
+            $errore = 'Email già in uso!';
+        }
 
         if(!isset($errore)) {
-            $stmt = $mysqli->prepare('SELECT nome, ruolo FROM utenti_ss WHERE email = ?;');
-            $stmt->bind_param('s', $email);
-            $stmt->execute();
-            $stmt->bind_result($name, $role);
-            $stmt->fetch();
-
-            $_SESSION['account'] = 
-            base64_encode(
-                json_encode([
-                    'email' => $email,
-                    'name' => $name,
-                    'role' => $role
-                ])
-            );
-
-            $stmt->close();
-
+            $stmt = $mysqli->prepare('INSERT INTO utenti_ss VALUES (?, ?, ?, ?);');
+            $stmt->bind_param('sssi', $email, $name, $password, $role);
+            if($stmt->execute()) {
+                $_SESSION['account'] = 
+                base64_encode(
+                    json_encode([
+                        'email' => $email,
+                        'name' => $name,
+                        'role' => $role
+                    ])
+                );
+            }
             header('Location: index.php');
         }
     }
@@ -73,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!--- basic page needs
    ================================================== -->
     <meta charset="utf-8">
-    <title>Login | Saper sapere</title>
+    <title>Sign up | Saper sapere</title>
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -128,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </ul>
                     </li>
                     <li><a href="about.php" title="">Chi siamo</a></li>
-                    <li class="current"><a href="#" title="" style="cursor: default;">Accedi</a></li>
+                    <li class="current"><a href="#" title="" style="cursor: default;">Registrati</a></li>
                 </ul>
             </nav> <!-- end main-nav-wrap -->
 
@@ -154,20 +155,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <form name="contactForm" id="contactForm" method="post" action="">
 
                         <fieldset>
-                            
+
+                            <div class="form-field">
+                                <span style="float: left; width: 6rem; height: 6rem; border: black 1.7px solid; text-align: center; font-size: 25px; line-height: 2.3; background-color: rgba(0,0,0,0.1);"><i class="bi bi-person-circle" style="font-size: 25px"></i></span>
+                                <input name="name" type="text" id="cEmail" class="full-width" required placeholder="Nome utente" value="" style="width: 90%;">
+                            </div>
+
                             <div class="form-field">
                                 <span style="float: left; width: 6rem; height: 6rem; border: black 1.7px solid; text-align: center; font-size: 25px; line-height: 2.3; background-color: rgba(0,0,0,0.1);"><i class="bi bi-at" style="font-size: 25px"></i></span>
                                 <input name="email" type="email" id="cEmail" class="full-width" required placeholder="Email" value="" style="width: 90%;  text-transform: lowercase;">
                             </div>
 
                             <script>
-                                const seeUnseePassword = () => {
-                                    if(document.querySelector(`input[name="password"]`).type == 'password') {
-                                        document.querySelectorAll(`i.bi`)[1].classList.replace('bi-eye', 'bi-eye-slash');
-                                        document.querySelector(`input[name="password"]`).type = 'text'
+                                const seeUnseePassword = (i) => {
+                                    name = (i === 0) ? 'password' : 'confermaPassword'
+                                    if(document.querySelector(`input[name="${name}"]`).type == 'password') {
+                                        document.querySelectorAll(`i.bi`)[i+2].classList.replace('bi-eye', 'bi-eye-slash');
+                                        document.querySelector(`input[name="${name}"]`).type = 'text'
                                     } else {
-                                        document.querySelectorAll(`i.bi`)[1]?.classList.replace('bi-eye-slash', 'bi-eye');
-                                        document.querySelector(`input[name="password"]`).type = 'password'
+                                        document.querySelectorAll(`i.bi`)[i+2]?.classList.replace('bi-eye-slash', 'bi-eye');
+                                        document.querySelector(`input[name="${name}"]`).type = 'password'
                                     }
                                 }
                             </script>
@@ -177,12 +184,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input name="password" type="password" id="cEmail" class="full-width" required placeholder="Password" value="" style="width: 90%;">
                             </div>
 
+                            <div class="form-field">
+                                <span style="float: left; width: 6rem; height: 6rem; border: black 1.7px solid; text-align: center; font-size: 25px; line-height: 2.3; background-color: rgba(0,0,0,0.1);"><i class="bi bi-eye" style="font-size: 25px; cursor: pointer" onclick="seeUnseePassword(1);"></i></i></span>
+                                <input name="confermaPassword" type="password" id="cEmail" class="full-width" required placeholder="Conferma password" value="" style="width: 90%;">
+                            </div>
+
                             <?php if(isset($errore)): ?>
                                 <div class="errore"><?= $errore ?></div>
                             <?php endif; ?>
 
-                            <button type="submit" class="submit button-primary">Accedi</button>
-                            <div style="margin-top: 15px">Non hai un account? <a href="signup.php">Registrati</a></div>
+                            <button type="submit" class="submit button-primary">Registrati</button>
+
+                            <div style="margin-top: 15px">Possiedi già un account? <a href="login.php">Accedi</a></div>
 
                         </fieldset>
 

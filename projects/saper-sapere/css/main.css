@@ -3354,3 +3354,15 @@ footer ul li {
 input#cEmail::placeholder {
 	text-transform: capitalize;
 }
+
+@media (max-width: 708px) {
+	div.form-field > span {
+		display: none;
+	}
+}
+
+.errore {
+	color: darkred;
+	text-align: center;
+	margin-bottom: 20px;
+}

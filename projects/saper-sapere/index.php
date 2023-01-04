@@ -71,6 +71,13 @@
 
 	include 'fromSSFtoHTML.php';
 	
+	session_start();
+
+	if(isset($_SESSION['account'])) {
+		$account = json_decode(base64_decode($_SESSION['account']));
+	}
+	$logged = isset($account);
+
 ?>
 
 
@@ -100,7 +107,17 @@
 			         	</ul>
 					</li>
 					<li><a href="about.php" title="">Chi siamo</a></li>
-					<li><a href="login.php" title="">Accedi</a></li>
+					<?php if($logged): ?>
+						<li class="has-children">
+						<a href="#" title="" style="cursor: default;">Account</a>
+						<ul class="sub-menu">
+							<li><a><i class="bi bi-person"></i>&nbsp;&nbsp;<?=$account->name?></a></li>
+							<li><a href="api/logout.php"><i class="bi bi-box-arrow-right"></i>&nbsp;&nbsp;Logout</a></li>
+			         	</ul>
+					</li>
+					<?php else: ?>
+						<li><a href="login.php" title="">Accedi</a></li>
+					<?php endif; ?>
 				</ul>
 			</nav> <!-- end main-nav-wrap -->
 
