@@ -1,17 +1,48 @@
 <!DOCTYPE html>
 <!--[if IE 8 ]><html class="no-js oldie ie8" lang="en"> <![endif]-->
 <!--[if IE 9 ]><html class="no-js oldie ie9" lang="en"> <![endif]-->
-<!--[if (gte IE 9)|!(IE)]><!--><html class="no-js" lang="en"> <!--<![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html class="no-js" lang="en"> <!--<![endif]-->
 
 <?php
-	
-	include 'config.php';
-	
+
+include 'config.php';
+
+session_start();
+
+$idArticolo = $_GET['id'];
+
+if (isset($_SESSION['account'])) {
+	$account = json_decode(base64_decode($_SESSION['account']));
+}
+$logged = isset($account);
+
+if ($logged) {
+
+	$stmt = $mysqli->prepare('SET FOREIGN_KEY_CHECKS=0;');
+	$stmt->execute();
+	$stmt->close();
+
+	$email = $account->email;
+	$stmt = $mysqli->prepare('INSERT INTO visualizzazioni (email, idArticolo) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM visualizzazioni WHERE email = ? AND idArticolo = ?);');
+	$stmt->bind_param('sisi', $email, $idArticolo, $email, $idArticolo);
+	$stmt->execute();
+	$stmt->close();
+
+	$stmt = $mysqli->prepare('SET FOREIGN_KEY_CHECKS=1;');
+	$stmt->execute();
+	$stmt->close();
+
+	$stmt = $mysqli->prepare('UPDATE articoli SET visualizzazioni = (SELECT COUNT(idVisualizzazione) FROM visualizzazioni WHERE idArticolo = ?) WHERE idArticolo = ?;');
+	$stmt->bind_param('ii', $idArticolo, $idArticolo);
+	$stmt->execute();
+	$stmt->close();
+
 	$nomi = array();
 	$stmt = $mysqli->prepare('SELECT nome FROM `categorie` WHERE codCategoria IN (SELECT codCategoria FROM articoli);');
 	$stmt->execute();
 	if ($stmt->bind_result($nome)) {
-		while($stmt->fetch()) {
+		while ($stmt->fetch()) {
 			$nomi[] = $nome;
 		}
 		$stmt->close();
@@ -23,7 +54,7 @@
 	$stmt->bind_param('i', $idArticolo);
 	$stmt->execute();
 	if ($stmt->bind_result($codCategoria, $nomeCategoria, $contenuto, $documento, $visualizzazioni, $nomeScrittore, $descrizioneScrittore, $fotoScrittore, $dataPubblicazione)) {
-		if($stmt->fetch()) {
+		if ($stmt->fetch()) {
 			$articolo = array(
 				'idArticolo' => $idArticolo,
 				'codCategoria' => $codCategoria,
@@ -50,13 +81,13 @@
 	}
 
 	$i = 1;
-	while($idArticolo - $i >= $minIdArticolo) {
+	while ($idArticolo - $i >= $minIdArticolo) {
 		$stmt = $mysqli->prepare('SELECT contenuto FROM `articoli` WHERE idArticolo = ? - ?;');
 		$stmt->bind_param('ii', $idArticolo, $i);
 		$stmt->execute();
 		if ($stmt->bind_result($contenuto)) {
-			if($stmt->fetch()) {
-				$paginaPrecedente = array('contenuto' => $contenuto);
+			if ($stmt->fetch()) {
+				$paginaPrecedente = array('contenuto' => $contenuto, 'idArticolo' => $idArticolo - $i);
 				$stmt->close();
 				break;
 			} else {
@@ -68,13 +99,13 @@
 
 
 	$i = 1;
-	while($idArticolo + $i <= $maxIdArticolo) {
+	while ($idArticolo + $i <= $maxIdArticolo) {
 		$stmt = $mysqli->prepare('SELECT contenuto FROM `articoli` WHERE idArticolo = ? + ?;');
 		$stmt->bind_param('ii', $idArticolo, $i);
 		$stmt->execute();
 		if ($stmt->bind_result($contenuto)) {
-			if($stmt->fetch()) {
-				$paginaSuccessiva = array('contenuto' => $contenuto);
+			if ($stmt->fetch()) {
+				$paginaSuccessiva = array('contenuto' => $contenuto, 'idArticolo' => $idArticolo + $i);
 				$stmt->close();
 				break;
 			} else {
@@ -85,44 +116,58 @@
 	}
 
 	include 'fromSSFtoHTML.php';
-	
-	session_start();
+} else {
 
-	if(isset($_SESSION['account'])) {
-		$account = json_decode(base64_decode($_SESSION['account']));
-	}
-	$logged = isset($account);
+	die('
+        <html>
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+        <h1 style="text-align: center; font-weight: 400">Devi accedere per leggere l\'articolo completo</h1>
+        <a href="login.php" style="text-align: center; font-weight: 500; display: flex; justify-content: center; font-size: 20px; margin-bottom: 30px; text-decoration: none; color: darkblue;">
+			Clicca qui per accedere
+		</a>
+		<div style="text-align: center; font-size: 20px;">Reindirizzamento automatico tra <span id="secondi">5</span></div>
+        <script>
+        setInterval(() => {
+            document.location.href = "index.php";
+        }, document.querySelector("span#secondi").innerHTML * 1000);
+        setInterval(() => {
+            document.querySelector("span#secondi").innerHTML = document.querySelector("span#secondi").innerHTML - 1;
+        }, 1000);
+        </script>
+        </html>
+        ');
+}
 
 ?>
 
 <head>
 
-   <!--- basic page needs
+	<!--- basic page needs
    ================================================== -->
-   <meta charset="utf-8">
+	<meta charset="utf-8">
 	<title><?= getTitle($articolo) ?> | Saper sapere</title>
-	<meta name="description" content="">  
+	<meta name="description" content="">
 	<meta name="author" content="">
 
-   <!-- mobile specific metas
+	<!-- mobile specific metas
    ================================================== -->
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
- 	<!-- CSS
+	<!-- CSS
    ================================================== -->
-   <link rel="stylesheet" href="css/base.css">
-   <link rel="stylesheet" href="css/vendor.css">  
-   <link rel="stylesheet" href="css/main.css">
-        
-   <!-- Bootstrap icons -->
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" rel="stylesheet" />
+	<link rel="stylesheet" href="css/base.css">
+	<link rel="stylesheet" href="css/vendor.css">
+	<link rel="stylesheet" href="css/main.css">
 
-   <!-- script
+	<!-- Bootstrap icons -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" rel="stylesheet" />
+
+	<!-- script
    ================================================== -->
 	<script src="js/modernizr.js"></script>
 	<script src="js/pace.min.js"></script>
 
-   <!-- favicons
+	<!-- favicons
 	================================================== -->
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 	<link rel="icon" href="favicon.ico" type="image/x-icon">
@@ -133,72 +178,72 @@
 
 	<!-- header 
    ================================================== -->
-   <header class="short-header">   
+	<header class="short-header">
 
-   	<div class="gradient-block"></div>	
+		<div class="gradient-block"></div>
 
-   	<div class="row header-content">
+		<div class="row header-content">
 
-   		<div class="logo">
-	         <a href="index.php">Daniele Di Spirito</a>
-	    </div>
+			<div class="logo">
+				<a href="index.php">Daniele Di Spirito</a>
+			</div>
 
-	   	<nav id="main-nav-wrap">
-			<ul class="main-navigation sf-menu">
-				<li><a href="index.php" title="">Home</a></li>									
-				<li class="has-children">
-					<a href="#" title="" style="cursor: default;">Categorie</a>
-					<ul class="sub-menu">
-						<?php foreach($nomi as $nome): ?>
-							<li><a href="categorie.php?nome=<?=strtolower($nome)?>"><?=$nome?></a></li>
-						<?php endforeach; ?>
-					</ul>
-				</li>
-				<li><a href="about.php" title="">Chi siamo</a></li>
-				<?php if($logged): ?>
+			<nav id="main-nav-wrap">
+				<ul class="main-navigation sf-menu">
+					<li><a href="index.php" title="">Home</a></li>
 					<li class="has-children">
-					<a href="#" title="" style="cursor: default;">Account</a>
-					<ul class="sub-menu">
-						<li><a><i class="bi bi-person"></i>&nbsp;&nbsp;<?=$account->name?></a></li>
-						<li><a href="api/logout.php"><i class="bi bi-box-arrow-right"></i>&nbsp;&nbsp;Logout</a></li>
-					</ul>
+						<a href="#" title="" style="cursor: default;">Categorie</a>
+						<ul class="sub-menu">
+							<?php foreach ($nomi as $nome) : ?>
+								<li><a href="categorie.php?nome=<?= strtolower($nome) ?>"><?= $nome ?></a></li>
+							<?php endforeach; ?>
+						</ul>
 					</li>
-				<?php else: ?>
-					<li><a href="login.php" title="">Accedi</a></li>
-				<?php endif; ?>
-			</ul>
-		</nav> <!-- end main-nav-wrap -->
+					<li><a href="about.php" title="">Chi siamo</a></li>
+					<?php if ($logged) : ?>
+						<li class="has-children">
+							<a href="#" title="" style="cursor: default;">Account</a>
+							<ul class="sub-menu">
+								<li><a name="<?=$account->email?>"><i class="bi bi-person"></i>&nbsp;&nbsp;<?= $account->name ?></a></li>
+								<li><a href="api/logout.php"><i class="bi bi-box-arrow-right"></i>&nbsp;&nbsp;Logout</a></li>
+							</ul>
+						</li>
+					<?php else : ?>
+						<li><a href="login.php" title="">Accedi</a></li>
+					<?php endif; ?>
+				</ul>
+			</nav> <!-- end main-nav-wrap -->
 
-		<div class="triggers">
-			<a class="menu-toggle" href="#"><span>Menu</span></a>
-		</div> <!-- end triggers -->	
-   		
-   	</div>	
-   		  		
-   </header> <!-- end header -->
-   
+			<div class="triggers">
+				<a class="menu-toggle" href="#"><span>Menu</span></a>
+			</div> <!-- end triggers -->
 
-   <!-- content
+		</div>
+
+	</header> <!-- end header -->
+
+
+	<!-- content
    ================================================== -->
-   <section id="content-wrap" class="blog-single">
-   	<div class="row">
-   		<div class="col-twelve">
+	<section id="content-wrap" class="blog-single">
+		<div class="row">
+			<div class="col-twelve">
 
-   			<article class="format-standard">  
+				<article class="format-standard">
 
-   				<div class="content-media">
+					<div class="content-media">
 						<div class="post-thumb">
-							<?php 
-								$finfo = finfo_open(FILEINFO_MIME_TYPE); // Apre il gestore
-								$mime_type = finfo_file($finfo, "documents/".$articolo['documento']); // Restituisce il MIME type
-								finfo_close($finfo); // Chiude il gestore
+							<?php
+							$finfo = finfo_open(FILEINFO_MIME_TYPE); // Apre il gestore
+							$mime_type = finfo_file($finfo, "documents/" . $articolo['documento']); // Restituisce il MIME type
+							finfo_close($finfo); // Chiude il gestore
 							?>
 
-							<?php if(str_starts_with($mime_type, 'image')): ?>	
-								<a href="articolo.php?id=<?=$articolo['idArticolo']?>" class="thumb-link">
-									<img src="documents/<?=$articolo['documento']?>" alt="building">
+							<?php if (str_starts_with($mime_type, 'image')) : ?>
+								<a href="articolo.php?id=<?= $articolo['idArticolo'] ?>" class="thumb-link">
+									<img src="documents/<?= $articolo['documento'] ?>" alt="building">
 								</a>
-							<?php elseif(str_starts_with($mime_type, 'video')): ?>
+							<?php elseif (str_starts_with($mime_type, 'video')) : ?>
 								<video width="320" height="240" controls>
 									<source src="documents/<?= $articolo['documento'] ?>" type="video/mp4">
 									Il tuo browser non supporta i video in formato MP4.
@@ -214,288 +259,376 @@
 						<ul class="entry-meta" style="margin-bottom: 2rem">
 							<li class="date"><?= $articolo['dataPubblicazione'] ?></li>|
 							<li class="date"><?= $articolo['nomeScrittore'] ?></li>|
-							<li class="cat"><a href="categorie.php?nome=<?=strtolower($articolo['nomeCategoria'])?>"><?= $articolo['nomeCategoria'] ?></a>|
-							<?=$articolo['visualizzazioni']?> <i class="bi bi-eye-fill" style="color: grey"></i>
-						</ul>						
+							<li class="cat"><a href="categorie.php?nome=<?= strtolower($articolo['nomeCategoria']) ?>"><?= $articolo['nomeCategoria'] ?></a>|
+								<?= $articolo['visualizzazioni'] ?> <i class="bi bi-eye-fill" style="color: grey"></i>
+						</ul>
 
 						<p class="lead" style="margin-bottom: 3rem"><?= getSummary($articolo) ?></p>
-						
+
 						<p>
 							<?= getContent($articolo) ?>
 						</p>
 
-						<br><hr>
+						<br>
+						<hr>
 
-		  			   <div class="author-profile">
-		  			   	<img src="data:image/*;base64,<?=base64_encode($articolo['fotoScrittore'])?>" alt="">
+						<div class="author-profile">
+							<img src="data:image/*;base64,<?= base64_encode($articolo['fotoScrittore']) ?>" alt="">
 
-		  			   	<div class="about">
-		  			   		<h4><?= $articolo['nomeScrittore'] ?></h4>
-		  			   	
-		  			   		<p><?= $articolo['descrizioneScrittore'] ?></p>
+							<div class="about">
+								<h4><?= $articolo['nomeScrittore'] ?></h4>
 
-		  			   	</div>
-		  			   </div> <!-- end author-profile -->						
+								<p><?= $articolo['descrizioneScrittore'] ?></p>
 
-					</div> <!-- end entry-primary -->		  			   
+							</div>
+						</div> <!-- end author-profile -->
 
-	  			   <div class="pagenav group">
-					
-				  	 	<?php if(isset($paginaPrecedente) and count($paginaPrecedente) > 0): ?>
-				  	 	<div class="prev-nav">
-		  			   		<a href="articolo.php?id=<?=$idArticolo-1?>" rel="prev">
-		  			   			<span>Articolo precedente</span>
-		  			   			<?= getTitle($paginaPrecedente) ?>
-		  			   		</a>
-		  			   	</div>
+					</div> <!-- end entry-primary -->
+
+					<div class="pagenav group">
+
+						<?php if (isset($paginaPrecedente) and count($paginaPrecedente) > 0) : ?>
+							<div class="prev-nav">
+								<a href="articolo.php?id=<?= $paginaPrecedente['idArticolo'] ?>" rel="prev">
+									<span>Articolo precedente</span>
+									<?= getTitle($paginaPrecedente) ?>
+								</a>
+							</div>
 						<?php endif; ?>
 
-						<?php if(isset($paginaSuccessiva) and count($paginaSuccessiva) > 0): ?>
-		  				<div class="next-nav">
-		  					<a href="articolo.php?id=<?=$idArticolo+1?>" rel="next">
-		  						<span>Articolo successivo</span>
-								<?= getTitle($paginaSuccessiva) ?>
-							</a>
-		  				</div>
+						<?php if (isset($paginaSuccessiva) and count($paginaSuccessiva) > 0) : ?>
+							<div class="next-nav">
+								<a href="articolo.php?id=<?= $paginaSuccessiva['idArticolo'] ?>" rel="next">
+									<span>Articolo successivo</span>
+									<?= getTitle($paginaSuccessiva) ?>
+								</a>
+							</div>
 						<?php endif; ?>
 
-	  				</div>
+					</div>
 
 				</article>
-   		
+
 
 			</div> <!-- end col-twelve -->
-   	</div> <!-- end row -->
+		</div> <!-- end row -->
+
+
+		<?php
+		$stmt = $mysqli->prepare('SELECT valore, commento, data, utenti_ss.nome FROM voti JOIN utenti_ss USING (email) WHERE idArticolo = ?;');
+		$stmt->bind_param('i', $idArticolo);
+		$stmt->bind_result($valore, $commento, $data, $nomeUtente);
+		$stmt->execute();
+		$commenti = array();
+		while ($stmt->fetch()) {
+			$commenti[] = array(
+				'valore' => $valore,
+				'commento' => $commento,
+				'data' => date("d/m/Y", strtotime($data)),
+				'nomeUtente' => $nomeUtente
+			);
+		}
+		?>
 
 		<div class="comments-wrap">
 			<div id="comments" class="row">
 				<div class="col-full">
 
-               <h3>5 Comments</h3>
+					<h3><?= count($commenti) ?> comment<?= count($commenti) == 1 ? 'o' : 'i'; ?></h3>
 
-               <!-- commentlist -->
-               <ol class="commentlist">
+					<!-- commentlist -->
+					<ol class="commentlist">
 
-                  <li class="depth-1">
+						<?php foreach ($commenti as $i => $commento) : ?>
 
-                     <div class="avatar">
-                        <img width="50" height="50" class="avatar" src="images/avatars/user-01.jpg" alt="">
-                     </div>
+							<style>
+								.rating<?= $i ?> {
+									border: none;
+								}
 
-                     <div class="comment-content">
+								.rating<?= $i ?>>input {
+									display: none;
+								}
 
-	                     <div class="comment-info">
-	                        <cite>Itachi Uchiha</cite>
+								.rating<?= $i ?>>label:before {
+									margin: 5px;
+									font-size: 1.25em;
+									font-family: FontAwesome;
+									display: inline-block;
+									content: "\f005";
+								}
 
-	                        <div class="comment-meta">
-	                           <time class="comment-time" datetime="2014-07-12T23:05">Jul 12, 2014 @ 23:05</time>
-	                           <span class="sep">/</span><a class="reply" href="#">Reply</a>
-	                        </div>
-	                     </div>
+								.rating<?= $i ?>>label {
+									color: #888;
+									float: right;
+								}
 
-	                     <div class="comment-text">
-	                        <p>Adhuc quaerendum est ne, vis ut harum tantas noluisse, id suas iisque mei. Nec te inani ponderum vulputate,
-	                        facilisi expetenda has et. Iudico dictas scriptorem an vim, ei alia mentitum est, ne has voluptua praesent.</p>
-	                     </div>
+								/***** CSS Magic to Highlight Stars on Hover *****/
 
-	                  </div>
+								.rating<?= $i ?>>input:checked~label {
+									color: #FFD700;
+								}
 
-                  </li>
+								/* hover previous stars in list */
 
-                  <li class="thread-alt depth-1">
+								.rating<?= $i ?>:is(:disabled, :not(:checked))>label {
+									color: #888;
+								}
+							</style>
 
-                     <div class="avatar">
-                        <img width="50" height="50" class="avatar" src="images/avatars/user-04.jpg" alt="">
-                     </div>
+							<li class="depth-1">
 
-                     <div class="comment-content">
+								<div class="avatar">
+									<img width="50" height="50" class="avatar" src="images/avatar.jpeg" alt="">
+								</div>
 
-	                     <div class="comment-info">
-	                        <cite>John Doe</cite>
+								<div class="comment-content">
 
-	                        <div class="comment-meta">
-	                           <time class="comment-time" datetime="2014-07-12T24:05">Jul 12, 2014 @ 24:05</time>
-	                           <span class="sep">/</span><a class="reply" href="#">Reply</a>
-	                        </div>
-	                     </div>
+									<div class="comment-info">
 
-	                     <div class="comment-text">
-	                        <p>Sumo euismod dissentiunt ne sit, ad eos iudico qualisque adversarium, tota falli et mei. Esse euismod
-	                        urbanitas ut sed, et duo scaevola pericula splendide. Primis veritus contentiones nec ad, nec et
-	                        tantas semper delicatissimi.</p>                        
-	                     </div>
+										<div class="rating<?= $i ?>">
 
-	                  </div>
+											<?php $titoli = array(1 => 'Non mi piace per niente', 2 => 'Non mi piace', 3 => 'Decente', 4 => 'Carino', 5 => 'Fantastico'); ?>
 
-                     <ul class="children">
+											<?php for ($j = 5; $j > 0; $j--) : ?>
+												<input type="radio" id="star<?= $j ?><?= $i ?>" name="rating<?=$j?>" value="<?= $j ?>" <?= ($valore === $j) ? 'checked' : '' ?> disabled /><label class="full" for="star<?= $j ?><?= $i ?>" title="<?= $titoli[$j] ?>"></label>
+											<?php endfor; ?>
+										</div>
 
-                        <li class="depth-2">
+										<cite><?= $commento['nomeUtente'] ?></cite>
 
-                           <div class="avatar">
-                              <img width="50" height="50" class="avatar" src="images/avatars/user-03.jpg" alt="">
-                           </div>
+										<div class="comment-meta">
+											<time class="comment-time" datetime="2014-07-12T23:05"><?= $commento['data'] ?></time>
+										</div>
+									</div>
 
-                           <div class="comment-content">
+									<div class="comment-text">
+										<p><?= $commento['commento'] ?></p>
+									</div>
 
-	                           <div class="comment-info">
-	                              <cite>Kakashi Hatake</cite>
+								</div>
 
-	                              <div class="comment-meta">
-	                                 <time class="comment-time" datetime="2014-07-12T25:05">Jul 12, 2014 @ 25:05</time>
-	                                 <span class="sep">/</span><a class="reply" href="#">Reply</a>
-	                              </div>
-	                           </div>
+							</li>
 
-	                           <div class="comment-text">
-	                              <p>Duis sed odio sit amet nibh vulputate
-	                              cursus a sit amet mauris. Morbi accumsan ipsum velit. Duis sed odio sit amet nibh vulputate
-	                              cursus a sit amet mauris</p>
-	                           </div>
+						<?php endforeach; ?>
 
-                           </div>
+					</ol> <!-- Commentlist End -->
 
-                           <ul class="children">
+					<!-- respond -->
+					<div class="respond">
 
-                              <li class="depth-3">
+						<form name="contactForm" id="contactForm" method="post" action="">
 
-                                 <div class="avatar">
-                                    <img width="50" height="50" class="avatar" src="images/avatars/user-04.jpg" alt="">
-                                 </div>
+							<fieldset>
 
-                                 <div class="comment-content">
-
-	                                 <div class="comment-info">
-	                                    <cite>John Doe</cite>
-
-	                                    <div class="comment-meta">
-	                                       <time class="comment-time" datetime="2014-07-12T25:15">July 12, 2014 @ 25:15</time>
-	                                       <span class="sep">/</span><a class="reply" href="#">Reply</a>
-	                                    </div>
-	                                 </div>
-
-	                                 <div class="comment-text">
-	                                    <p>Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est
-	                                    etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum.</p>
-	                                 </div>
-
-                                 </div>
-
-                              </li>
-
-                           </ul>
-
-                        </li>
-
-                     </ul>
-
-                  </li>
-
-                  <li class="depth-1">
-
-                     <div class="avatar">
-                        <img width="50" height="50" class="avatar" src="images/avatars/user-02.jpg" alt="">
-                     </div>
-
-                     <div class="comment-content">
-
-	                     <div class="comment-info">
-	                        <cite>Shikamaru Nara</cite>
-
-	                        <div class="comment-meta">
-	                           <time class="comment-time" datetime="2014-07-12T25:15">July 12, 2014 @ 25:15</time>
-	                           <span class="sep">/</span><a class="reply" href="#">Reply</a>
-	                        </div>
-	                     </div>
-
-	                     <div class="comment-text">
-	                        <p>Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem.</p>
-	                     </div>
-
-                     </div>
-
-                  </li>
-
-               </ol> <!-- Commentlist End -->					
-
-               <!-- respond -->
-               <div class="respond">
-
-                  	<form name="contactForm" id="contactForm" method="post" action="">
-
-						<fieldset>
-
-							<h3 style="float: left">Commenta (<span id="nCaratteri">0</span>/255)</h3>
-							<!--
+								<h3 style="float: left">Commenta (<span id="nCaratteri">0</span>/255)</h3>
+								<!--
 								<div class="form-field">
 									<input name="cEmail" type="text" id="cEmail" class="full-width" placeholder="Your Email" value="">
 								</div>
 							-->
-							
-							<div class="rating">
-								<input type="radio" id="star5" name="rating" value="5" /><label class = "full" for="star5" title="Awesome - 5 stars"></label>
-								<input type="radio" id="star4" name="rating" value="4" /><label class = "full" for="star4" title="Pretty good - 4 stars"></label>
-								<input type="radio" id="star3" name="rating" value="3" /><label class = "full" for="star3" title="Meh - 3 stars"></label>
-								<input type="radio" id="star2" name="rating" value="2" /><label class = "full" for="star2" title="Kinda bad - 2 stars"></label>
-								<input type="radio" id="star1" name="rating" value="1" /><label class = "full" for="star1" title="Sucks big time - 1 star"></label>
-							</div>
 
-							<script>
-								const countCaratteri = () => {
-									document.querySelector('span#nCaratteri').innerHTML = document.querySelector('textarea#cMessage').value.length
-								}
-							</script>
+								<div class="rating">
+									<input type="radio" id="star5" name="rating" value="5" /><label class="full" for="star5" title="Awesome - 5 stars"></label>
+									<input type="radio" id="star4" name="rating" value="4" /><label class="full" for="star4" title="Pretty good - 4 stars"></label>
+									<input type="radio" id="star3" name="rating" value="3" /><label class="full" for="star3" title="Meh - 3 stars"></label>
+									<input type="radio" id="star2" name="rating" value="2" /><label class="full" for="star2" title="Kinda bad - 2 stars"></label>
+									<input type="radio" id="star1" name="rating" value="1" /><label class="full" for="star1" title="Sucks big time - 1 star"></label>
+								</div>
 
-							<div class="message form-field">
-								<textarea name="cMessage" id="cMessage" class="full-width" placeholder="Commento" style="resize: none" maxlength="255" onkeyup="countCaratteri()" onkeypress="countCaratteri();"></textarea>
-							</div>
+								<script>
+									const countCaratteri = () => {
+										document.querySelector('span#nCaratteri').innerHTML = document.querySelector('textarea#cMessage').value.length
+									}
+								</script>
 
-							<button type="submit" class="submit button-primary">Invia</button>
+								<div class="message form-field">
+									<textarea name="cMessage" id="cMessage" class="full-width" placeholder="Commento" style="resize: none" maxlength="255" onkeyup="countCaratteri()" onkeypress="countCaratteri();"></textarea>
+								</div>
 
-						</fieldset>
+								<button type="button" class="submit button-primary" onclick="sendComment();">Invia</button>
 
-					</form> <!-- Form End -->
+								<script>
+									async function sendComment() {
+										commento = document.querySelector('textarea#cMessage').value
+										valore = 1
+										while(!document.querySelectorAll(`.rating > input`)[5 - valore].checked && valore <= 4) {
+											valore++;
+										}
+										if(valore === 5 && !document.querySelectorAll(`.rating > input`)[0].checked) valore = 0;
 
-               </div> <!-- Respond End -->
+										i = 0;
+										while(document.querySelector(`.rating${i}`) !== null) {
+											i++;
+										}
+										titoli = ['Non mi piace per niente', 'Non mi piace', 'Decente', 'Carino', 'Fantastico'];
+										inputs = '';
 
-         	</div> <!-- end col-full -->
-         </div> <!-- end row comments -->
+										for(let j = 5; j > 0; j--) {
+											inputs += `<input type="radio" id="star${j}${i}" name="rating${i}" value="${j}" ${(j === valore) ? 'checked' : ''} disabled /><label class="full" for="star${j}${i}" title="${titoli[j-1]}"></label>\n`;
+										}
+
+										nomeUtente = document.querySelector("#main-nav-wrap > ul > li:nth-child(4) > ul > li:nth-child(1) > a").text.trim()
+
+										// crea un oggetto Date con la data corrente
+										var oggi = new Date();
+
+										// estrai il giorno, il mese e l'anno dall'oggetto Date
+										var giorno = oggi.getDate();
+										var mese = oggi.getMonth() + 1; // getMonth() restituisce il mese da 0 a 11, quindi aggiungiamo 1 per ottenere i mesi da 1 a 12
+										var anno = oggi.getFullYear();
+
+										// aggiungi lo zero di padding ai mesi e ai giorni con una sola cifra
+										if (mese < 10) {
+											mese = "0" + mese;
+										}
+										if (giorno < 10) {
+											giorno = "0" + giorno;
+										}
+
+										// crea la stringa con la data nel formato dd/mm/yyyy
+										var dataOggi = giorno + "/" + mese + "/" + anno;
+
+
+										textToAdd = `
+										<style>
+											.rating${i} {
+												border: none;
+											}
+
+											.rating${i} >input {
+												display: none;
+											}
+
+											.rating${i} >label:before {
+												margin: 5px;
+												font-size: 1.25em;
+												font-family: FontAwesome;
+												display: inline-block;
+												content: "\\f005";
+											}
+
+											.rating${i} >label {
+												color: #888;
+												float: right;
+											}
+
+											/***** CSS Magic to Highlight Stars on Hover *****/
+
+											.rating${i} >input:checked~label {
+												color: #FFD700;
+											}
+
+											/* hover previous stars in list */
+
+											.rating${i}:is(:disabled, :not(:checked))>label {
+												color: #888;
+											}
+										</style>
+
+										<li class="depth-1">
+
+											<div class="avatar">
+												<img width="50" height="50" class="avatar" src="images/avatar.jpeg" alt="">
+											</div>
+
+											<div class="comment-content">
+
+												<div class="comment-info">
+
+													<div class="rating${i}">
+
+														${inputs}
+														
+													</div>
+
+													<cite>${nomeUtente}</cite>
+
+													<div class="comment-meta">
+														<time class="comment-time" datetime="2014-07-12T23:05">${dataOggi}</time>
+													</div>
+												</div>
+
+												<div class="comment-text">
+													<p>${commento}</p>
+												</div>
+
+											</div>
+
+										</li>
+									`;
+
+									document.querySelector('ol').insertAdjacentHTML('beforeend', textToAdd)
+
+									// remove vote and comment
+
+									if(valore !== 0) document.querySelectorAll('.rating > input')[5 - valore].checked = false
+									document.querySelector('textarea#cMessage').value = ''
+									countCaratteri();
+
+									const response = await fetch('api/comment.php', {
+										method: 'POST',
+										headers: {
+											'Content-Type': 'application/json',
+										},
+										//mode:"no-cors",
+										body: JSON.stringify({
+											valore: valore,
+											commento: commento,
+											data: dataOggi,
+											idArticolo: parseInt(document.location.href.split('?id=')[1]),
+											email: document.querySelector("#main-nav-wrap > ul > li:nth-child(4) > ul > li:nth-child(1) > a").name
+										}),
+									});
+									
+									}
+								</script>
+
+							</fieldset>
+
+						</form> <!-- Form End -->
+
+					</div> <!-- Respond End -->
+
+				</div> <!-- end col-full -->
+			</div> <!-- end row comments -->
 		</div> <!-- end comments-wrap -->
 
-   </section> <!-- end content -->
+	</section> <!-- end content -->
 
 
-   <!-- footer
+	<!-- footer
    ================================================== -->
-   <footer>
+	<footer>
 
-      <div class="footer-bottom">
-      	<div class="row">
+		<div class="footer-bottom">
+			<div class="row">
 
-      		<div class="col-twelve">
-	      		<div class="copyright">
-				  	<span>© Copyright <b>Saper sapere</b> 2023</span>
-		         	<span>Sviluppato da <a href="../../">Daniele Di Spirito</a></span>   	
-		         </div>
+				<div class="col-twelve">
+					<div class="copyright">
+						<span>© Copyright <b>Saper sapere</b> 2023</span>
+						<span>Sviluppato da <a href="../../">Daniele Di Spirito</a></span>
+					</div>
 
-		         <div id="go-top">
-		            <a class="smoothscroll" title="Back to Top" href="#top"><i class="icon icon-arrow-up"></i></a>
-		         </div>         
-	      	</div>
+					<div id="go-top">
+						<a class="smoothscroll" title="Back to Top" href="#top"><i class="icon icon-arrow-up"></i></a>
+					</div>
+				</div>
 
-      	</div> 
-      </div> <!-- end footer-bottom -->  
+			</div>
+		</div> <!-- end footer-bottom -->
 
-   </footer>
+	</footer>
 
-   <div id="preloader"> 
-    	<div id="loader"></div>
-   </div> 
+	<div id="preloader">
+		<div id="loader"></div>
+	</div>
 
-   <!-- Java Script
-   ================================================== --> 
-   <script src="js/jquery-2.1.3.min.js"></script>
-   <script src="js/plugins.js"></script>
-   <script src="js/main.js"></script>
+	<!-- Java Script
+   ================================================== -->
+	<script src="js/jquery-2.1.3.min.js"></script>
+	<script src="js/plugins.js"></script>
+	<script src="js/main.js"></script>
 
 </body>
 
