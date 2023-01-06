@@ -8,12 +8,12 @@
 
     $valore = $post->valore;
     $commento = $post->commento;
-    $data = $post->data;
+    $data = date("Y-m-d", strtotime($post->data));
     $idArticolo = $post->idArticolo;
     $email = $post->email;
 
-    $stmt = $mysqli->prepare('INSERT INTO voti VALUES (?, ?, ?, ?, ?);');
-    $stmt->bind_param('isdis', $valore, $commento, $data, $idArticolo, $email);
+    $stmt = $mysqli->prepare('INSERT INTO voti VALUES (NULL, ?, ?, ?, ?, ?);');
+    $stmt->bind_param('issis', $valore, $commento, $data, $idArticolo, $email);
     $stmt->execute();
     $stmt->close();
 

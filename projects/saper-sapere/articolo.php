@@ -391,7 +391,7 @@ if ($logged) {
 											<?php $titoli = array(1 => 'Non mi piace per niente', 2 => 'Non mi piace', 3 => 'Decente', 4 => 'Carino', 5 => 'Fantastico'); ?>
 
 											<?php for ($j = 5; $j > 0; $j--) : ?>
-												<input type="radio" id="star<?= $j ?><?= $i ?>" name="rating<?=$j?>" value="<?= $j ?>" <?= ($valore === $j) ? 'checked' : '' ?> disabled /><label class="full" for="star<?= $j ?><?= $i ?>" title="<?= $titoli[$j] ?>"></label>
+												<input type="radio" id="star<?= $j ?><?= $i ?>" name="rating<?=$i?>" value="<?= $j ?>" <?= ($commento['valore'] === $j) ? 'checked' : '' ?> disabled /><label class="full" for="star<?= $j ?><?= $i ?>" title="<?= $titoli[$j] ?>"></label>
 											<?php endfor; ?>
 										</div>
 
