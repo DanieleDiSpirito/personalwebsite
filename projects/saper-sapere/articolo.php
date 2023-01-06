@@ -334,7 +334,7 @@ if ($logged) {
 			<div id="comments" class="row">
 				<div class="col-full">
 
-					<h3><?= count($commenti) ?> comment<?= count($commenti) == 1 ? 'o' : 'i'; ?></h3>
+					<h3><span id="nCommenti"><?= count($commenti) ?></span> comment<?= count($commenti) == 1 ? 'o' : 'i'; ?></h3>
 
 					<!-- commentlist -->
 					<ol class="commentlist">
@@ -560,6 +560,9 @@ if ($logged) {
 
 									document.querySelector('ol').insertAdjacentHTML('beforeend', textToAdd)
 
+									document.querySelector('span#nCommenti').innerHTML = parseInt(document.querySelector('span#nCommenti').innerHTML) + 1
+									if(document.querySelector('span#nCommenti').innerHTML == 1) document.querySelector("#comments > div > h3").innerHTML = document.querySelector('span#nCommenti').innerHTML + ' commento';
+									else document.querySelector("#comments > div > h3").innerHTML = document.querySelector('span#nCommenti').innerHTML + ' commenti';
 									// remove vote and comment
 
 									if(valore !== 0) document.querySelectorAll('.rating > input')[5 - valore].checked = false
