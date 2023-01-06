@@ -2902,7 +2902,7 @@ footer ul li {
  * ------------------------------------------------------------------- */
 .comments-wrap {
 	background-color: rgba(0, 0, 0, 0.08);
-	padding: 7.8rem 0 9rem;
+	/*padding: 7.8rem 0 9rem;*/
 }
 
 /* comments
@@ -2991,7 +2991,8 @@ footer ul li {
 
 /* comments form
  * ---------------------------- */
-#comments .respond {
+
+#comments h3#h3 {
 	padding-top: 4.2rem;
 	border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
@@ -3369,4 +3370,13 @@ input#cEmail::placeholder {
 	color: darkred;
 	text-align: center;
 	margin-bottom: 20px;
+}
+
+.trash {
+	font-size: 15px;
+}
+
+.trash:hover {
+	color: red;
+	cursor: pointer;
 }

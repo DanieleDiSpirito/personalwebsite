@@ -204,7 +204,7 @@ if ($logged) {
 						<li class="has-children">
 							<a href="#" title="" style="cursor: default;">Account</a>
 							<ul class="sub-menu">
-								<li><a name="<?=$account->email?>"><i class="bi bi-person"></i>&nbsp;&nbsp;<?= $account->name ?></a></li>
+								<li><a name="<?= $account->email ?>"><i class="bi bi-person"></i>&nbsp;&nbsp;<?= $account->name ?></a></li>
 								<li><a href="api/logout.php"><i class="bi bi-box-arrow-right"></i>&nbsp;&nbsp;Logout</a></li>
 							</ul>
 						</li>
@@ -315,16 +315,17 @@ if ($logged) {
 
 
 		<?php
-		$stmt = $mysqli->prepare('SELECT valore, commento, data, utenti_ss.nome FROM voti JOIN utenti_ss USING (email) WHERE idArticolo = ?;');
+		$stmt = $mysqli->prepare('SELECT codVoto, valore, commento, data, utenti_ss.nome FROM voti JOIN utenti_ss USING (email) WHERE idArticolo = ? ORDER BY data DESC;');
 		$stmt->bind_param('i', $idArticolo);
-		$stmt->bind_result($valore, $commento, $data, $nomeUtente);
+		$stmt->bind_result($codVoto, $valore, $commento, $data, $nomeUtente);
 		$stmt->execute();
 		$commenti = array();
 		while ($stmt->fetch()) {
 			$commenti[] = array(
+				'codVoto' => $codVoto,
 				'valore' => $valore,
 				'commento' => $commento,
-				'data' => date("d/m/Y", strtotime($data)),
+				'data' => date("d/m/Y H:i:s", strtotime($data)),
 				'nomeUtente' => $nomeUtente
 			);
 		}
@@ -334,7 +335,42 @@ if ($logged) {
 			<div id="comments" class="row">
 				<div class="col-full">
 
-					<h3><span id="nCommenti"><?= count($commenti) ?></span> comment<?= count($commenti) == 1 ? 'o' : 'i'; ?></h3>
+					<!-- respond -->
+					<div class="respond">
+
+						<form name="contactForm" id="contactForm" method="post" action="">
+
+							<fieldset>
+
+								<h3 style="float: left">Commenta (<span id="nCaratteri">0</span>/255)</h3>
+
+								<div class="rating">
+									<input type="radio" id="star5" name="rating" value="5" /><label class="full" for="star5" title="Awesome - 5 stars"></label>
+									<input type="radio" id="star4" name="rating" value="4" /><label class="full" for="star4" title="Pretty good - 4 stars"></label>
+									<input type="radio" id="star3" name="rating" value="3" /><label class="full" for="star3" title="Meh - 3 stars"></label>
+									<input type="radio" id="star2" name="rating" value="2" /><label class="full" for="star2" title="Kinda bad - 2 stars"></label>
+									<input type="radio" id="star1" name="rating" value="1" /><label class="full" for="star1" title="Sucks big time - 1 star"></label>
+								</div>
+
+								<script>
+									const countCaratteri = () => {
+										document.querySelector('span#nCaratteri').innerHTML = document.querySelector('textarea#cMessage').value.length
+									}
+								</script>
+
+								<div class="message form-field">
+									<textarea name="cMessage" id="cMessage" class="full-width" placeholder="Commento" style="resize: none" maxlength="255" onkeyup="countCaratteri()" onkeypress="countCaratteri();"></textarea>
+								</div>
+
+								<button type="button" class="submit button-primary" onclick="sendComment();">Invia</button>
+
+							</fieldset>
+
+						</form> <!-- Form End -->
+
+					</div> <!-- Respond End -->
+
+					<h3 id="h3"><span id="nCommenti"><?= count($commenti) ?></span> comment<?= count($commenti) == 1 ? 'o' : 'i'; ?></h3>
 
 					<!-- commentlist -->
 					<ol class="commentlist">
@@ -391,16 +427,24 @@ if ($logged) {
 											<?php $titoli = array(1 => 'Non mi piace per niente', 2 => 'Non mi piace', 3 => 'Decente', 4 => 'Carino', 5 => 'Fantastico'); ?>
 
 											<?php for ($j = 5; $j > 0; $j--) : ?>
-												<input type="radio" id="star<?= $j ?><?= $i ?>" name="rating<?=$i?>" value="<?= $j ?>" <?= ($commento['valore'] === $j) ? 'checked' : '' ?> disabled /><label class="full" for="star<?= $j ?><?= $i ?>" title="<?= $titoli[$j] ?>"></label>
+												<input type="radio" id="star<?= $j ?><?= $i ?>" name="rating<?= $i ?>" value="<?= $j ?>" <?= ($commento['valore'] === $j) ? 'checked' : '' ?> disabled /><label class="full" for="star<?= $j ?><?= $i ?>" title="<?= $titoli[$j] ?>"></label>
 											<?php endfor; ?>
 										</div>
 
-										<cite><?= $commento['nomeUtente'] ?></cite>
+										<div style="display: none" id="codVoto"><?= $commento['codVoto'] ?></div>
+
+										<cite><?= $commento['nomeUtente'] ?>
+											<?php if ($commento['nomeUtente'] === $account->name) : ?>
+												&nbsp;&nbsp;
+												<span class="trash" onclick="removeComment(<?= $i ?>);" title="Elimina commento"><i class="bi bi-trash"></i></span>
+											<?php endif; ?>
+										</cite>
 
 										<div class="comment-meta">
-											<time class="comment-time" datetime="2014-07-12T23:05"><?= $commento['data'] ?></time>
+											<time class="comment-time"><?= $commento['data'] ?></time>
 										</div>
 									</div>
+
 
 									<div class="comment-text">
 										<p><?= $commento['commento'] ?></p>
@@ -414,83 +458,48 @@ if ($logged) {
 
 					</ol> <!-- Commentlist End -->
 
-					<!-- respond -->
-					<div class="respond">
+				</div> <!-- end col-full -->
+			</div> <!-- end row comments -->
+		</div> <!-- end comments-wrap -->
 
-						<form name="contactForm" id="contactForm" method="post" action="">
+	</section> <!-- end content -->
 
-							<fieldset>
+	<script>
+		async function sendComment() {
+			commento = document.querySelector('textarea#cMessage').value
+			valore = 1
+			while (!document.querySelectorAll(`.rating > input`)[5 - valore].checked && valore <= 4) {
+				valore++;
+			}
+			if (valore === 5 && !document.querySelectorAll(`.rating > input`)[0].checked) valore = 0;
 
-								<h3 style="float: left">Commenta (<span id="nCaratteri">0</span>/255)</h3>
-								<!--
-								<div class="form-field">
-									<input name="cEmail" type="text" id="cEmail" class="full-width" placeholder="Your Email" value="">
-								</div>
-							-->
+			i = 0;
+			while (document.querySelector(`.rating${i}`) !== null) {
+				i++;
+			}
 
-								<div class="rating">
-									<input type="radio" id="star5" name="rating" value="5" /><label class="full" for="star5" title="Awesome - 5 stars"></label>
-									<input type="radio" id="star4" name="rating" value="4" /><label class="full" for="star4" title="Pretty good - 4 stars"></label>
-									<input type="radio" id="star3" name="rating" value="3" /><label class="full" for="star3" title="Meh - 3 stars"></label>
-									<input type="radio" id="star2" name="rating" value="2" /><label class="full" for="star2" title="Kinda bad - 2 stars"></label>
-									<input type="radio" id="star1" name="rating" value="1" /><label class="full" for="star1" title="Sucks big time - 1 star"></label>
-								</div>
+			titoli = ['Non mi piace per niente', 'Non mi piace', 'Decente', 'Carino', 'Fantastico'];
+			inputs = '';
 
-								<script>
-									const countCaratteri = () => {
-										document.querySelector('span#nCaratteri').innerHTML = document.querySelector('textarea#cMessage').value.length
-									}
-								</script>
+			for (let j = 5; j > 0; j--) {
+				inputs += `<input type="radio" id="star${j}${i}" name="rating${i}" value="${j}" ${(j === valore) ? 'checked' : ''} disabled /><label class="full" for="star${j}${i}" title="${titoli[j-1]}"></label>\n`;
+			}
 
-								<div class="message form-field">
-									<textarea name="cMessage" id="cMessage" class="full-width" placeholder="Commento" style="resize: none" maxlength="255" onkeyup="countCaratteri()" onkeypress="countCaratteri();"></textarea>
-								</div>
+			nomeUtente = document.querySelector("#main-nav-wrap > ul > li:nth-child(4) > ul > li:nth-child(1) > a").text.trim()
 
-								<button type="button" class="submit button-primary" onclick="sendComment();">Invia</button>
+			// crea un oggetto Date con la data corrente
+			var oggi = new Date();
 
-								<script>
-									async function sendComment() {
-										commento = document.querySelector('textarea#cMessage').value
-										valore = 1
-										while(!document.querySelectorAll(`.rating > input`)[5 - valore].checked && valore <= 4) {
-											valore++;
-										}
-										if(valore === 5 && !document.querySelectorAll(`.rating > input`)[0].checked) valore = 0;
+			var dataOggi = oggi.toLocaleString('it-IT', {
+				year: 'numeric',
+				month: '2-digit',
+				day: '2-digit',
+				hour: '2-digit',
+				minute: '2-digit',
+				second: '2-digit'
+			})
 
-										i = 0;
-										while(document.querySelector(`.rating${i}`) !== null) {
-											i++;
-										}
-										titoli = ['Non mi piace per niente', 'Non mi piace', 'Decente', 'Carino', 'Fantastico'];
-										inputs = '';
-
-										for(let j = 5; j > 0; j--) {
-											inputs += `<input type="radio" id="star${j}${i}" name="rating${i}" value="${j}" ${(j === valore) ? 'checked' : ''} disabled /><label class="full" for="star${j}${i}" title="${titoli[j-1]}"></label>\n`;
-										}
-
-										nomeUtente = document.querySelector("#main-nav-wrap > ul > li:nth-child(4) > ul > li:nth-child(1) > a").text.trim()
-
-										// crea un oggetto Date con la data corrente
-										var oggi = new Date();
-
-										// estrai il giorno, il mese e l'anno dall'oggetto Date
-										var giorno = oggi.getDate();
-										var mese = oggi.getMonth() + 1; // getMonth() restituisce il mese da 0 a 11, quindi aggiungiamo 1 per ottenere i mesi da 1 a 12
-										var anno = oggi.getFullYear();
-
-										// aggiungi lo zero di padding ai mesi e ai giorni con una sola cifra
-										if (mese < 10) {
-											mese = "0" + mese;
-										}
-										if (giorno < 10) {
-											giorno = "0" + giorno;
-										}
-
-										// crea la stringa con la data nel formato dd/mm/yyyy
-										var dataOggi = giorno + "/" + mese + "/" + anno;
-
-
-										textToAdd = `
+			textToAdd = `
 										<style>
 											.rating${i} {
 												border: none;
@@ -545,10 +554,10 @@ if ($logged) {
 													<cite>${nomeUtente}</cite>
 
 													<div class="comment-meta">
-														<time class="comment-time" datetime="2014-07-12T23:05">${dataOggi}</time>
+														<time class="comment-time">${dataOggi}</time>
 													</div>
 												</div>
-
+												
 												<div class="comment-text">
 													<p>${commento}</p>
 												</div>
@@ -558,47 +567,57 @@ if ($logged) {
 										</li>
 									`;
 
-									document.querySelector('ol').insertAdjacentHTML('beforeend', textToAdd)
+			document.querySelector('ol').insertAdjacentHTML('afterbegin', textToAdd)
 
-									document.querySelector('span#nCommenti').innerHTML = parseInt(document.querySelector('span#nCommenti').innerHTML) + 1
-									if(document.querySelector('span#nCommenti').innerHTML == 1) document.querySelector("#comments > div > h3").innerHTML = document.querySelector('span#nCommenti').innerHTML + ' commento';
-									else document.querySelector("#comments > div > h3").innerHTML = document.querySelector('span#nCommenti').innerHTML + ' commenti';
-									// remove vote and comment
+			document.querySelector('span#nCommenti').textContent = parseInt(document.querySelector('span#nCommenti').textContent) + 1
+			if (document.querySelector('span#nCommenti').textContent == 1) document.querySelector("#comments > div > h3").innerHTML = `<span id="nCommenti">${document.querySelector('span#nCommenti').textContent}</span> commento`;
+			else document.querySelector("#comments > div > h3").innerHTML = `<span id="nCommenti">${document.querySelector('span#nCommenti').textContent}</span> commenti`;
+			// remove vote and comment
 
-									if(valore !== 0) document.querySelectorAll('.rating > input')[5 - valore].checked = false
-									document.querySelector('textarea#cMessage').value = ''
-									countCaratteri();
+			if (valore !== 0) document.querySelectorAll('.rating > input')[5 - valore].checked = false
+			document.querySelector('textarea#cMessage').value = ''
+			countCaratteri();
 
-									const response = await fetch('api/comment.php', {
-										method: 'POST',
-										headers: {
-											'Content-Type': 'application/json',
-										},
-										//mode:"no-cors",
-										body: JSON.stringify({
-											valore: valore,
-											commento: commento,
-											data: dataOggi,
-											idArticolo: parseInt(document.location.href.split('?id=')[1]),
-											email: document.querySelector("#main-nav-wrap > ul > li:nth-child(4) > ul > li:nth-child(1) > a").name
-										}),
-									});
-									
-									}
-								</script>
+			const response = await fetch('api/add-comment.php', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				//mode:"no-cors",
+				body: JSON.stringify({
+					valore: valore,
+					commento: commento,
+					data: oggi.getTime(),
+					idArticolo: parseInt(document.location.href.split('?id=')[1]),
+					email: document.querySelector("#main-nav-wrap > ul > li:nth-child(4) > ul > li:nth-child(1) > a").name
+				}),
+			});
 
-							</fieldset>
+		}
 
-						</form> <!-- Form End -->
+		async function removeComment(i) {
+			codVoto = parseInt(document.querySelector(`.rating${i} ~ #codVoto`).textContent)
 
-					</div> <!-- Respond End -->
+			const response = await fetch('api/remove-comment.php', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				//mode:"no-cors",
+				body: JSON.stringify({
+					codVoto: codVoto,
+					email: document.querySelector("#main-nav-wrap > ul > li:nth-child(4) > ul > li:nth-child(1) > a").name
+				}),
+			});
 
-				</div> <!-- end col-full -->
-			</div> <!-- end row comments -->
-		</div> <!-- end comments-wrap -->
+			document.querySelector(`ol > li div.rating${i}`).parentElement.parentElement.parentElement.style.display = 'none';
+			document.querySelector(`ol > li div.rating${i}`).parentElement.parentElement.parentElement.innerHTML = '';
 
-	</section> <!-- end content -->
-
+			document.querySelector('span#nCommenti').textContent = parseInt(document.querySelector('span#nCommenti').textContent) - 1
+			if (document.querySelector('span#nCommenti').textContent == 1) document.querySelector("#comments > div > h3").innerHTML = `<span id="nCommenti">${document.querySelector('span#nCommenti').textContent}</span> commento`;
+			else document.querySelector("#comments > div > h3").innerHTML = `<span id="nCommenti">${document.querySelector('span#nCommenti').textContent}</span> commenti`;
+		}
+	</script>
 
 	<!-- footer
    ================================================== -->

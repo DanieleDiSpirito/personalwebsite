@@ -23,45 +23,48 @@ include 'fromSSFtoHTML.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if(!(isset($_POST['email'], $_POST['password']) and $_POST['email'] != '' and $_POST['password'] != '')) {
-        $errore = 'Riempi tutti i campi!';
+    if(!(isset($_POST['email']) and $_POST['email'] != '')) {
+        $errore = 'Inserire una mail valida!';
     }
 
     if(!(isset($errore))) {
         $email = strtolower($_POST['email']);
-        $password = hash('sha256', $_POST['password']);
         
-        $stmt = $mysqli->prepare('SELECT 1 FROM utenti_ss WHERE email = ? AND password = ?;');
-        $stmt->bind_param('ss', $email, $password);
+        $stmt = $mysqli->prepare('SELECT 1 FROM utenti_ss WHERE email = ?;');
+        $stmt->bind_param('s', $email);
         $stmt->execute();
         $stmt->bind_result($accountExists);
         $stmt->fetch();
 
         if($accountExists !== 1) {
-            $errore = 'Le credenziali non sono corrette!';
+            $errore = 'Non è presente nessun account con questa mail';
         }
 
         $stmt->close();
 
         if(!isset($errore)) {
-            $stmt = $mysqli->prepare('SELECT nome, ruolo FROM utenti_ss WHERE email = ?;');
-            $stmt->bind_param('s', $email);
-            $stmt->execute();
-            $stmt->bind_result($name, $role);
-            $stmt->fetch();
-
-            $_SESSION['account'] = 
-            base64_encode(
-                json_encode([
-                    'email' => $email,
-                    'name' => $name,
-                    'role' => $role
-                ])
-            );
-
-            $stmt->close();
-
-            header('Location: index.php');
+            $random_code = random_bytes(30);
+            $codice = base64_encode(json_encode(array('cod' => base64_encode($random_code), 'email' => $email)));
+            $_SESSION['codice'] = $codice;
+            $message = "
+                <html>
+                    <head>
+                        <title>Recupero password</title>
+                    </head>
+                    <body>
+                        <h3>Link per il recupero password</h3>
+                        <p>Clicca su questo link per recuperare la tua password: https://dispiritodaniele.altervista.org/projects/saper-sapere/nuova-password.php?cod=$codice</p>
+                    </body>
+                </html>
+            ";
+            $headers[] = 'MIME-Version: 1.0';
+            $headers[] = 'Content-type: text/html; charset=utf-8';
+            $headers[] = 'From: "Daniele Di Spirito" <dispiritodaniele.noreply@gmail.com>';
+            if(mail($email, 'Recupero password', $message, implode("\r\n", $headers))) {
+                $alert = 'Mail mandata con successo!';
+            } else {
+                $errore = 'Invio mail fallito!';
+            }
         }
     }
 }
@@ -73,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!--- basic page needs
    ================================================== -->
     <meta charset="utf-8">
-    <title>Login | Saper sapere</title>
+    <title>Recupero password | Saper sapere</title>
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -128,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </ul>
                     </li>
                     <li><a href="about.php" title="">Chi siamo</a></li>
-                    <li class="current"><a href="#" title="" style="cursor: default;">Accedi</a></li>
+                    <li class="current"><a href="#" title="" style="cursor: default;">Recupero password</a></li>
                 </ul>
             </nav> <!-- end main-nav-wrap -->
 
@@ -160,30 +163,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input name="email" type="email" id="cEmail" class="full-width" required placeholder="Email" value="" style="width: 90%;  text-transform: lowercase;">
                             </div>
 
-                            <script>
-                                const seeUnseePassword = () => {
-                                    if(document.querySelector(`input[name="password"]`).type == 'password') {
-                                        document.querySelectorAll(`i.bi`)[1].classList.replace('bi-eye', 'bi-eye-slash');
-                                        document.querySelector(`input[name="password"]`).type = 'text'
-                                    } else {
-                                        document.querySelectorAll(`i.bi`)[1]?.classList.replace('bi-eye-slash', 'bi-eye');
-                                        document.querySelector(`input[name="password"]`).type = 'password'
-                                    }
-                                }
-                            </script>
-
-                            <div class="form-field">
-                                <span style="float: left; width: 6rem; height: 6rem; border: black 1.7px solid; text-align: center; font-size: 25px; line-height: 2.3; background-color: rgba(0,0,0,0.1);"><i class="bi bi-eye" style="font-size: 25px; cursor: pointer" onclick="seeUnseePassword(0);"></i></i></span>
-                                <input name="password" type="password" id="cEmail" class="full-width" required placeholder="Password" value="" style="width: 90%;">
-                            </div>
-
                             <?php if(isset($errore)): ?>
                                 <div class="errore"><?= $errore ?></div>
                             <?php endif; ?>
 
-                            <button type="submit" class="submit button-primary">Accedi</button>
-                            <div style="margin-top: 15px">Non hai un account? <a href="signup.php">Registrati</a></div>
-                            <div style="margin-top: 0px">Non ricordi la tua password? <a href="recupero-password.php">Recupera password</a></div>
+                            <?php if(isset($alert)): ?>
+                                <div class="errore" style="color: darkgreen !important;"><?= $alert ?></div>
+                            <?php endif; ?>
+
+                            <button type="submit" class="submit button-primary">Invia mail di recupero</button>
 
                         </fieldset>
 
