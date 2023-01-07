@@ -19,11 +19,18 @@ $logged = isset($account);
 
 if ($logged) {
 
+	$email = $account->email;
+	$stmt = $mysqli->prepare('SELECT fotoProfilo FROM utenti_ss WHERE email = ?;');
+	$stmt->bind_param('s', $email);
+	$stmt->execute();
+	$stmt->bind_result($foto);
+	$stmt->fetch();
+	$stmt->close();
+
 	$stmt = $mysqli->prepare('SET FOREIGN_KEY_CHECKS=0;');
 	$stmt->execute();
 	$stmt->close();
 
-	$email = $account->email;
 	$stmt = $mysqli->prepare('INSERT INTO visualizzazioni (email, idArticolo) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM visualizzazioni WHERE email = ? AND idArticolo = ?);');
 	$stmt->bind_param('sisi', $email, $idArticolo, $email, $idArticolo);
 	$stmt->execute();
@@ -50,7 +57,7 @@ if ($logged) {
 
 	$idArticolo = $_GET['id'];
 
-	$stmt = $mysqli->prepare('SELECT codCategoria, categorie.nome, contenuto, documento, visualizzazioni, scrittori.nome, scrittori.descrizione, scrittori.fotoProfilo, dataPubblicazione FROM `articoli` JOIN categorie USING (codCategoria) JOIN scrittori USING (idScrittore) WHERE idArticolo = ?;');
+	$stmt = $mysqli->prepare('SELECT codCategoria, categorie.nome, contenuto, documento, visualizzazioni, utenti_ss.nome, utenti_ss.descrizione, utenti_ss.fotoProfilo, dataPubblicazione FROM `articoli` JOIN categorie USING (codCategoria) JOIN utenti_ss ON mailScrittore = email WHERE idArticolo = ?;');
 	$stmt->bind_param('i', $idArticolo);
 	$stmt->execute();
 	if ($stmt->bind_result($codCategoria, $nomeCategoria, $contenuto, $documento, $visualizzazioni, $nomeScrittore, $descrizioneScrittore, $fotoScrittore, $dataPubblicazione)) {
@@ -204,7 +211,7 @@ if ($logged) {
 						<li class="has-children">
 							<a href="#" title="" style="cursor: default;">Account</a>
 							<ul class="sub-menu">
-								<li><a name="<?= $account->email ?>"><i class="bi bi-person"></i>&nbsp;&nbsp;<?= $account->name ?></a></li>
+							<li><a name="<?=$account->email?>" style="display: flex; align-items: center"><?= ($foto !== '') ? '<img width="50" height="50" style="width: 30px; height: 30px; border-radius: 50%; margin-left: -10px" id="fotoProfilo" src="data:image/*;base64,'.base64_encode($foto).'"></img>': '<i class="bi bi-person"></i>' ?>&nbsp;&nbsp;&nbsp;<?=$account->name?></a></li>
 								<li><a href="api/logout.php"><i class="bi bi-box-arrow-right"></i>&nbsp;&nbsp;Logout</a></li>
 							</ul>
 						</li>
@@ -315,9 +322,9 @@ if ($logged) {
 
 
 		<?php
-		$stmt = $mysqli->prepare('SELECT codVoto, valore, commento, data, utenti_ss.nome FROM voti JOIN utenti_ss USING (email) WHERE idArticolo = ? ORDER BY data DESC;');
+		$stmt = $mysqli->prepare('SELECT codVoto, valore, commento, data, utenti_ss.nome, utenti_ss.fotoProfilo FROM voti JOIN utenti_ss USING (email) WHERE idArticolo = ? ORDER BY data DESC;');
 		$stmt->bind_param('i', $idArticolo);
-		$stmt->bind_result($codVoto, $valore, $commento, $data, $nomeUtente);
+		$stmt->bind_result($codVoto, $valore, $commento, $data, $nomeUtente, $fotoProfilo);
 		$stmt->execute();
 		$commenti = array();
 		while ($stmt->fetch()) {
@@ -326,7 +333,8 @@ if ($logged) {
 				'valore' => $valore,
 				'commento' => $commento,
 				'data' => date("d/m/Y H:i:s", strtotime($data)),
-				'nomeUtente' => $nomeUtente
+				'nomeUtente' => $nomeUtente,
+				'fotoProfilo' => $fotoProfilo
 			);
 		}
 		?>
@@ -415,7 +423,7 @@ if ($logged) {
 							<li class="depth-1">
 
 								<div class="avatar">
-									<img width="50" height="50" class="avatar" src="images/avatar.jpeg" alt="">
+									<img width="50" height="50" class="avatar" src="<?= ($commento['fotoProfilo'] != '') ? 'data:image/*;base64,'.base64_encode($commento['fotoProfilo']) : 'images/avatar.jpeg' ?>" alt="">
 								</div>
 
 								<div class="comment-content">
@@ -499,6 +507,8 @@ if ($logged) {
 				second: '2-digit'
 			})
 
+			var fotoProfilo = document.getElementById('fotoProfilo')?.src
+
 			textToAdd = `
 										<style>
 											.rating${i} {
@@ -538,7 +548,7 @@ if ($logged) {
 										<li class="depth-1">
 
 											<div class="avatar">
-												<img width="50" height="50" class="avatar" src="images/avatar.jpeg" alt="">
+												<img width="50" height="50" class="avatar" src="${(fotoProfilo != null) ? fotoProfilo : 'images/avatar.jpeg'}" alt="">
 											</div>
 
 											<div class="comment-content">

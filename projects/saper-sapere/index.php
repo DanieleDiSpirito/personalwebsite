@@ -51,7 +51,7 @@
 	}
 
 	$articoli = array();
-	$stmt = $mysqli->prepare('SELECT idArticolo, codCategoria, categorie.nome, contenuto, documento, visualizzazioni, scrittori.nome, dataPubblicazione FROM `articoli` JOIN categorie USING (codCategoria) JOIN scrittori USING (idScrittore) ORDER BY dataPubblicazione DESC;');
+	$stmt = $mysqli->prepare('SELECT idArticolo, codCategoria, categorie.nome, contenuto, documento, visualizzazioni, utenti_ss.nome, dataPubblicazione FROM `articoli` JOIN categorie USING (codCategoria) JOIN utenti_ss ON mailScrittore = email ORDER BY dataPubblicazione DESC;');
 	$stmt->execute();
 	if ($stmt->bind_result($idArticolo, $codCategoria, $nomeCategoria, $contenuto, $documento, $visualizzazioni, $scrittore, $dataPubblicazione)) {
 		while($stmt->fetch()) {
@@ -78,6 +78,15 @@
 	}
 	$logged = isset($account);
 
+	if($logged) {
+		$email = $account->email;
+		$stmt = $mysqli->prepare('SELECT fotoProfilo FROM utenti_ss WHERE email = ?;');
+		$stmt->bind_param('s', $email);
+		$stmt->execute();
+		$stmt->bind_result($foto);
+		$stmt->fetch();
+		$stmt->close();
+	}
 ?>
 
 
@@ -111,7 +120,7 @@
 						<li class="has-children">
 						<a href="#" title="" style="cursor: default;">Account</a>
 						<ul class="sub-menu">
-							<li><a><i class="bi bi-person"></i>&nbsp;&nbsp;<?=$account->name?></a></li>
+							<li><a name="<?=$account->email?>" style="display: flex; align-items: center"><?= ($foto !== '') ? '<img width="50" height="50" style="width: 30px; height: 30px; border-radius: 50%; margin-left: -10px" src="data:image/*;base64,'.base64_encode($foto).'"></img>': '<i class="bi bi-person"></i>' ?>&nbsp;&nbsp;&nbsp;<?=$account->name?></a></li>
 							<li><a href="api/logout.php"><i class="bi bi-box-arrow-right"></i>&nbsp;&nbsp;Logout</a></li>
 			         	</ul>
 					</li>
