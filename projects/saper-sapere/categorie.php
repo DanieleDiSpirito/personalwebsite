@@ -127,7 +127,7 @@ if($logged) {
 						<li class="has-children">
 							<a href="#" title="" style="cursor: default;">Account</a>
 							<ul class="sub-menu">
-								<li><a name="<?= $account->email ?>" href="account.php" style="display: flex; align-items: center"><?= ($foto !== '') ? '<img width="50" height="50" style="width: 30px; height: 30px; border-radius: 50%; margin-left: -10px" id="fotoProfilo" src="data:image/*;base64,' . base64_encode($foto) . '"></img>' : '<i class="bi bi-person"></i>' ?>&nbsp;&nbsp;&nbsp;<?= $account->name ?></a></li>
+								<li><a name="<?= $account->email ?>" href="account.php" style="display: flex; align-items: center"><?= (!($foto === '' or is_null($foto))) ? '<img width="50" height="50" style="width: 30px; height: 30px; border-radius: 50%; margin-left: -10px" id="fotoProfilo" src="data:image/*;base64,' . base64_encode($foto) . '"></img>' : '<i class="bi bi-person"></i>' ?>&nbsp;&nbsp;&nbsp;<?= $account->name ?></a></li>
 								<li><a href="api/logout.php"><i class="bi bi-box-arrow-right"></i>&nbsp;&nbsp;Logout</a></li>
 							</ul>
 						</li>

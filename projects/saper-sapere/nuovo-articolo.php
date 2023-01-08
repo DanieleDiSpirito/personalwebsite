@@ -59,56 +59,59 @@ if($logged) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if(isset($_POST['title'], $_POST['summary'], $_POST['content'], $_POST['data'], $_POST['categoria'], $_POST['newCat'], $_POST['documento'])) {
-        if($_POST['categoria'] === 'nuovaCategoria' and $_POST['newCat'] === '') die('Nome nuova categoria non specificato');
-        foreach($_POST as $key => $value) {
-            if($value === '' and $key !== 'newCat') die('Non sono ammessi parametri vuoti');
-        }
+
+    if(!isset($_POST['title'], $_POST['summary'], $_POST['content'], $_POST['data'], $_POST['categoria'], $_POST['newCat'], $_FILES['documento'])) die('Ci sono campi mancanti');
+    if($_POST['categoria'] === 'nuovaCategoria' and $_POST['newCat'] === '') die('Nome nuova categoria non specificato');
+    foreach($_POST as $key => $value) {
+        if($value === '' and $key !== 'newCat') die('Non sono ammessi parametri vuoti');
+    }
+    
+    // documento
+    if(!(str_starts_with($_FILES['documento']['type'], 'image/') or $_FILES['documento']['type'] === 'video/mp4')) die('Formato documento non valido');
+    if(move_uploaded_file($_FILES['documento']['tmp_name'], "documents/".$_FILES['documento']['name'])) {
+        $documento = $_FILES['documento']['name'];
+    }
+
+    // categoria
+    if($_POST['categoria'] !== 'nuovaCategoria') {
+        $categoria = $_POST['categoria'];
     } else {
-        die('Ci sono campi mancanti');
-    }
-    /*
-    if(!(isset($_POST['email'], $_POST['password']) and $_POST['email'] != '' and $_POST['password'] != '')) {
-        $errore = 'Riempi tutti i campi!';
-    }
-
-    if(!(isset($errore))) {
-        $email = strtolower($_POST['email']);
-        $password = hash('sha256', $_POST['password']);
-        
-        $stmt = $mysqli->prepare('SELECT 1 FROM utenti_ss WHERE email = ? AND password = ?;');
-        $stmt->bind_param('ss', $email, $password);
+        $categoria = $_POST['newCat'];
+        $stmt = $mysqli->prepare('INSERT INTO categorie (nome) VALUES (?);');
+        $stmt->bind_param('s', $categoria);
         $stmt->execute();
-        $stmt->bind_result($accountExists);
-        $stmt->fetch();
-
-        if($accountExists !== 1) {
-            $errore = 'Le credenziali non sono corrette!';
-        }
-
         $stmt->close();
+    }
 
-        if(!isset($errore)) {
-            $stmt = $mysqli->prepare('SELECT nome, ruolo FROM utenti_ss WHERE email = ?;');
-            $stmt->bind_param('s', $email);
-            $stmt->execute();
-            $stmt->bind_result($name, $role);
-            $stmt->fetch();
+    $stmt = $mysqli->prepare('SELECT codCategoria FROM categorie WHERE nome = ?;');
+    $stmt->bind_param('s', $categoria);
+    $stmt->execute();
+    $stmt->bind_result($codCategoria);
+    $stmt->fetch();
+    $stmt->close();
+    if(is_null($codCategoria)) die('Categoria selezionata non esistente');
 
-            $_SESSION['account'] = 
-            base64_encode(
-                json_encode([
-                    'email' => $email,
-                    'name' => $name,
-                    'role' => $role
-                ])
-            );
+    // contenuto
+    $contenuto = '';
+    $contenuto .= "&t{".$_POST['title']."}".PHP_EOL.PHP_EOL;
+    $contenuto .= "&s{".$_POST['summary']."}".PHP_EOL.PHP_EOL;
+    $contenuto .= "&c{".PHP_EOL.$_POST['content'].PHP_EOL."\c}";
+    $contenuto = str_replace('<script>', base64_encode(random_bytes(10)), $contenuto);
 
-            $stmt->close();
+    // visualizzazioni
+    $visualizzazioni = 0;
 
-            header('Location: index.php');
-        }
-    }*/
+    // mailScrittore ($email)
+
+    // dataPubblicazione
+    $dataPubblicazione = $_POST['data'];
+
+    // inserimento
+    $stmt = $mysqli->prepare('INSERT INTO articoli (codCategoria, contenuto, documento, visualizzazioni, mailScrittore, dataPubblicazione) VALUES (?, ?, ?, ?, ?, ?);');
+    $stmt->bind_param('ississ', $codCategoria, $contenuto, $documento, $visualizzazioni, $email, $dataPubblicazione);
+    $stmt->execute();
+    $stmt->close();
+
 }
 
 ?>
@@ -177,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 						<li class="has-children">
 						<a href="#" title="" style="cursor: default;">Account</a>
 						<ul class="sub-menu">
-							<li><a name="<?=$account->email?>" href="account.php" style="display: flex; align-items: center"><?= ($foto !== '') ? '<img width="50" height="50" style="width: 30px; height: 30px; border-radius: 50%; margin-left: -10px" id="fotoProfilo" src="data:image/*;base64,'.base64_encode($foto).'"></img>': '<i class="bi bi-person"></i>' ?>&nbsp;&nbsp;&nbsp;<?=$account->name?></a></li>
+							<li><a name="<?=$account->email?>" href="account.php" style="display: flex; align-items: center"><?= (!($foto === '' or is_null($foto))) ? '<img width="50" height="50" style="width: 30px; height: 30px; border-radius: 50%; margin-left: -10px" id="fotoProfilo" src="data:image/*;base64,'.base64_encode($foto).'"></img>': '<i class="bi bi-person"></i>' ?>&nbsp;&nbsp;&nbsp;<?=$account->name?></a></li>
 							<li><a href="api/logout.php"><i class="bi bi-box-arrow-right"></i>&nbsp;&nbsp;Logout</a></li>
 						</ul>
 					</li>
@@ -223,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="respond">
 
-                    <form name="contactForm" id="contactForm" method="post" action="">
+                    <form name="contactForm" id="contactForm" method="post" action="" enctype='multipart/form-data'>
 
                         <fieldset>
                             
