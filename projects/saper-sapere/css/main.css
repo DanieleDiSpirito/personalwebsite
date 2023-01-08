@@ -1820,7 +1820,7 @@ header .logo a {
 
 .main-navigation ul li:hover > ul,
 .main-navigation ul li.sfHover > ul {
-	display: block;
+	display: block !important;
 }
 
 /* -------------------------------------------------------------------
@@ -1968,7 +1968,7 @@ header .logo a {
 	}
 
 	.main-navigation > li {
-		display: block;
+		display: block !important;
 		text-align: left;
 		margin-right: 0;
 		border: none;
@@ -2026,7 +2026,7 @@ header .logo a {
 	}
 
 	.main-navigation li.has-children ul {
-		position: static;
+		/*position: static;*/
 		background: #FFFFFF;
 		box-shadow: none;
 		margin-top: -6px;
@@ -3379,4 +3379,26 @@ input#cEmail::placeholder {
 .trash:hover {
 	color: red;
 	cursor: pointer;
+}
+
+.goog-te-gadget > :not(div) {
+	display: none !important;
+}
+
+.goog-te-gadget {
+	color: transparent !important;
+}
+
+.goog-te-combo {
+	display: initial !important;
+	height: 50px;
+    border-radius: 2vh;
+    color: #888;
+    background-color: #ddd;
+}
+
+ul.main-navigation > li {
+	height: 8rem;
+	display: flex;
+	align-items: center;
 }

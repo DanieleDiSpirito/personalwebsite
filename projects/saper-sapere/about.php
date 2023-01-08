@@ -21,6 +21,8 @@
    <link rel="stylesheet" href="css/vendor.css">  
    <link rel="stylesheet" href="css/main.css">
         
+   <!-- Bootstrap icons -->
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" rel="stylesheet" />
 
    <!-- script
    ================================================== -->
@@ -47,6 +49,22 @@
 		$stmt->close();
 	}
 
+	session_start();
+	if(isset($_SESSION['account'])) {
+		$account = json_decode(base64_decode($_SESSION['account']));
+	}
+	$logged = isset($account);
+
+	if($logged) {
+		$email = $account->email;
+		$stmt = $mysqli->prepare('SELECT fotoProfilo FROM utenti_ss WHERE email = ?;');
+		$stmt->bind_param('s', $email);
+		$stmt->execute();
+		$stmt->bind_result($foto);
+		$stmt->fetch();
+		$stmt->close();
+	}
+
 ?>
 
 <body id="top">
@@ -63,19 +81,43 @@
 	         <a href="index.php">Author</a>
 	      </div>
 
-	   	<nav id="main-nav-wrap">
+		  <nav id="main-nav-wrap">
 				<ul class="main-navigation sf-menu">
-					<li><a href="index.php" title="">Home</a></li>									
+					<li class=""><a href="index.php" title="">Home</a></li>									
 					<li class="has-children">
 						<a href="#" title="" style="cursor: default;">Categorie</a>
 						<ul class="sub-menu">
-			            <?php foreach($nomi as $nome): ?>
-							<li><a href="categorie.php?nome=<?=strtolower($nome)?>"><?=$nome?></a></li>
-						<?php endforeach; ?>
-			         </ul>
+							<?php foreach($nomi as $nome): ?>
+								<li><a href="categorie.php?nome=<?=strtolower($nome)?>"><?=$nome?></a></li>
+							<?php endforeach; ?>
+						</ul>
 					</li>
 					<li class="current"><a href="about.php" title="">Chi siamo</a></li>
-					<li><a href="login.php" title="">Accedi</a></li>
+					<?php if($logged): ?>
+						<li class="has-children">
+						<a href="#" title="" style="cursor: default;">Account</a>
+						<ul class="sub-menu">
+							<li><a name="<?=$account->email?>" style="display: flex; align-items: center"><?= ($foto !== '') ? '<img width="50" height="50" style="width: 30px; height: 30px; border-radius: 50%; margin-left: -10px" id="fotoProfilo" src="data:image/*;base64,'.base64_encode($foto).'"></img>': '<i class="bi bi-person"></i>' ?>&nbsp;&nbsp;&nbsp;<?=$account->name?></a></li>
+							<li><a href="api/logout.php"><i class="bi bi-box-arrow-right"></i>&nbsp;&nbsp;Logout</a></li>
+						</ul>
+					</li>
+					<?php else: ?>
+						<li><a href="login.php" title="">Accedi</a></li>
+					<?php endif; ?>
+					<li style="height: 10rem">
+					<!-- Translate -->
+					<div id="google_translate_element" class="text-white pl-3"></div>
+					<script type="text/javascript">
+						function googleTranslateElementInit() {
+							new google.translate.TranslateElement(
+								{pageLanguage: 'it'},
+								'google_translate_element'
+							);
+						}
+					</script>
+					<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+					<!-- Translate -->
+					</li>
 				</ul>
 			</nav> <!-- end main-nav-wrap -->
 

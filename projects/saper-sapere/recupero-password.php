@@ -132,6 +132,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </li>
                     <li><a href="about.php" title="">Chi siamo</a></li>
                     <li class="current"><a href="#" title="" style="cursor: default;">Recupero password</a></li>
+                    <li style="height: 10rem">
+                    <!-- Translate -->
+                    <div id="google_translate_element" class="text-white pl-3"></div>
+                    <script type="text/javascript">
+                        function googleTranslateElementInit() {
+                            new google.translate.TranslateElement(
+                                {pageLanguage: 'it'},
+                                'google_translate_element'
+                            );
+                        }
+                    </script>
+                    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+                    <!-- Translate -->
+                    </li>
                 </ul>
             </nav> <!-- end main-nav-wrap -->
 
