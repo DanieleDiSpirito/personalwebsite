@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if(!isset($errore)) {
-            $stmt = $mysqli->prepare('INSERT INTO utenti_ss VALUES (?, ?, ?, ?);');
+            $stmt = $mysqli->prepare('INSERT INTO utenti_ss (email, nome, password, ruolo) VALUES (?, ?, ?, ?);');
             $stmt->bind_param('sssi', $email, $name, $password, $role);
             if($stmt->execute()) {
                 $_SESSION['account'] = 
